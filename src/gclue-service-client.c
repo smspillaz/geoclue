@@ -361,10 +361,10 @@ gclue_service_client_handle_start (GClueDBusClient       *client,
 
         desktop_id = gclue_dbus_client_get_desktop_id (client);
         if (desktop_id == NULL) {
-                g_dbus_method_invocation_return_error (invocation,
-                                                       G_DBUS_ERROR,
-                                                       G_DBUS_ERROR_ACCESS_DENIED,
-                                                       "'DesktopId' property must be set");
+                g_dbus_method_invocation_return_error_literal (invocation,
+                                                               G_DBUS_ERROR,
+                                                               G_DBUS_ERROR_ACCESS_DENIED,
+                                                               "'DesktopId' property must be set");
                 return TRUE;
         }
 
@@ -545,10 +545,10 @@ gclue_service_client_handle_method_call (GDBusConnection       *connection,
         GDBusInterfaceVTable *skeleton_vtable;
 
         if (!gclue_client_info_check_bus_name (priv->client_info, sender)) {
-                g_dbus_method_invocation_return_error (invocation,
-                                                       G_DBUS_ERROR,
-                                                       G_DBUS_ERROR_ACCESS_DENIED,
-                                                       "Access denied");
+                g_dbus_method_invocation_return_error_literal (invocation,
+                                                               G_DBUS_ERROR,
+                                                               G_DBUS_ERROR_ACCESS_DENIED,
+                                                               "Access denied");
                 return;
         }
 
