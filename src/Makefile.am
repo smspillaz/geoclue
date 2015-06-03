@@ -9,6 +9,8 @@ interface_DATA = org.freedesktop.GeoClue2.xml
 
 dbus_built_sources = geoclue-interface.c 	\
 		     geoclue-interface.h 	\
+		     compass-interface.c 	\
+		     compass-interface.h	\
 		     wpa_supplicant-interface.c \
 		     wpa_supplicant-interface.h
 geoclue-interface.c: geoclue-interface.h
@@ -40,6 +42,13 @@ wpa_supplicant-interface.h: Makefile.am fi.w1.wpa_supplicant1.xml
 		org.gtk.GDBus.C.Name BSS_Removed			 \
 		--generate-c-code wpa_supplicant-interface 	\
 		$(srcdir)/fi.w1.wpa_supplicant1.xml
+
+compass-interface.c: compass-interface.h
+compass-interface.h: Makefile.am net.hadess.SensorProxy.xml
+	$(AM_V_GEN)$(GDBUS_CODEGEN) \
+		--interface-prefix net.hadess.SensorProxy \
+		--generate-c-code compass-interface 	  \
+		$(srcdir)/net.hadess.SensorProxy.xml
 
 gclue-marshal.c: gclue-marshal.list
 	$(AM_V_GEN)$(GLIB_GENMARSHAL) --prefix=gclue_marshal $(srcdir)/gclue-marshal.list --header --body > gclue-marshal.c
@@ -134,6 +143,7 @@ geoclue_LDADD = $(GEOCLUE_LIBS) 	  		    	\
 CLEANFILES = $(BUILT_SOURCES)
 EXTRA_DIST = $(interface_DATA) 	       \
 	     fi.w1.wpa_supplicant1.xml \
+	     net.hadess.SensorProxy.xml \
 	     gclue-marshal.list
 
 pkgconfigdir = $(libdir)/pkgconfig
