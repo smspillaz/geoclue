@@ -81,6 +81,8 @@ libgeoclue_la_SOURCES =	 	 \
 	gclue-3g-tower.h 	 \
 	gclue-client-info.h 	 \
 	gclue-client-info.c 	 \
+	gclue-compass.h 	 \
+	gclue-compass.c 	 \
 	gclue-config.h 	 	 \
 	gclue-config.c 	 	 \
 	gclue-error.h 	 	 \
