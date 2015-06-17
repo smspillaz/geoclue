@@ -21,6 +21,7 @@
 
 #include <glib.h>
 #include "gclue-location-source.h"
+#include "gclue-compass.h"
 
 /**
  * SECTION:gclue-location-source
@@ -46,6 +47,10 @@ struct _GClueLocationSourcePrivate
         GClueAccuracyLevel avail_accuracy_level;
 
         gboolean compute_movement;
+
+        GClueCompass *compass;
+
+        guint heading_changed_id;
 };
 
 enum
@@ -59,6 +64,41 @@ enum
 };
 
 static GParamSpec *gParamSpecs[LAST_PROP];
+
+static gboolean
+set_heading_from_compass (GClueLocationSource *source,
+                          GClueLocation       *location)
+{
+        GClueLocationSourcePrivate *priv = source->priv;
+        gdouble heading = gclue_compass_get_heading (priv->compass);
+        gdouble curr_heading = gclue_location_get_heading (location);
+
+        if (heading == GCLUE_LOCATION_HEADING_UNKNOWN  ||
+            heading == curr_heading)
+                return FALSE;
+
+        g_debug ("%s got new heading %f", G_OBJECT_TYPE_NAME (source), heading);
+        /* We trust heading from compass more than any other source so we always
+         * override existing heading
+         */
+        gclue_location_set_heading (location, heading);
+
+        return TRUE;
+}
+
+static void
+on_compass_heading_changed (GObject    *gobject,
+                            GParamSpec *pspec,
+                            gpointer    user_data)
+{
+        GClueLocationSource* source = GCLUE_LOCATION_SOURCE (user_data);
+
+        if (source->priv->location == NULL)
+                return;
+
+        if (set_heading_from_compass (source, source->priv->location))
+                g_object_notify (G_OBJECT (source), "location");
+}
 
 static void
 gclue_location_source_get_property (GObject    *object,
@@ -128,6 +168,7 @@ gclue_location_source_finalize (GObject *object)
 
         gclue_location_source_stop (GCLUE_LOCATION_SOURCE (object));
         g_clear_object (&priv->location);
+        g_clear_object (&priv->compass);
 
         G_OBJECT_CLASS (gclue_location_source_parent_class)->finalize (object);
 }
@@ -196,6 +237,7 @@ gclue_location_source_init (GClueLocationSource *source)
                                              GCLUE_TYPE_LOCATION_SOURCE,
                                              GClueLocationSourcePrivate);
         source->priv->compute_movement = TRUE;
+        source->priv->compass = gclue_compass_get_singleton ();
 }
 
 static gboolean
@@ -207,6 +249,12 @@ start_source (GClueLocationSource *source)
                          G_OBJECT_TYPE_NAME (source));
                 return FALSE;
         }
+
+        source->priv->heading_changed_id =
+                g_signal_connect (G_OBJECT (source->priv->compass),
+                                  "notify::heading",
+                                  G_CALLBACK (on_compass_heading_changed),
+                                  source);
 
         g_object_notify (G_OBJECT (source), "active");
         g_debug ("%s now active", G_OBJECT_TYPE_NAME (source));
@@ -228,6 +276,9 @@ stop_source (GClueLocationSource *source)
                          G_OBJECT_TYPE_NAME (source));
                 return FALSE;
         }
+
+        g_signal_handler_disconnect (source->priv->compass,
+                                     source->priv->heading_changed_id);
 
         g_object_notify (G_OBJECT (source), "active");
         g_debug ("%s now inactive", G_OBJECT_TYPE_NAME (source));
@@ -319,6 +370,7 @@ gclue_location_source_set_location (GClueLocationSource *source,
                 gclue_location_set_speed (priv->location, speed);
         }
 
+        set_heading_from_compass (source, location);
         heading = gclue_location_get_heading (location);
         if (heading == GCLUE_LOCATION_HEADING_UNKNOWN) {
                 if (cur_location != NULL && priv->compute_movement)
