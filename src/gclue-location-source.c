@@ -168,7 +168,6 @@ gclue_location_source_finalize (GObject *object)
 
         gclue_location_source_stop (GCLUE_LOCATION_SOURCE (object));
         g_clear_object (&priv->location);
-        g_clear_object (&priv->compass);
 
         G_OBJECT_CLASS (gclue_location_source_parent_class)->finalize (object);
 }
@@ -237,7 +236,6 @@ gclue_location_source_init (GClueLocationSource *source)
                                              GCLUE_TYPE_LOCATION_SOURCE,
                                              GClueLocationSourcePrivate);
         source->priv->compute_movement = TRUE;
-        source->priv->compass = gclue_compass_get_singleton ();
 }
 
 static gboolean
@@ -250,6 +248,7 @@ start_source (GClueLocationSource *source)
                 return FALSE;
         }
 
+        source->priv->compass = gclue_compass_get_singleton ();
         source->priv->heading_changed_id =
                 g_signal_connect (G_OBJECT (source->priv->compass),
                                   "notify::heading",
@@ -279,6 +278,7 @@ stop_source (GClueLocationSource *source)
 
         g_signal_handler_disconnect (source->priv->compass,
                                      source->priv->heading_changed_id);
+        g_clear_object (&source->priv->compass);
 
         g_object_notify (G_OBJECT (source), "active");
         g_debug ("%s now inactive", G_OBJECT_TYPE_NAME (source));
