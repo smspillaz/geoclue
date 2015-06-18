@@ -70,8 +70,13 @@ set_heading_from_compass (GClueLocationSource *source,
                           GClueLocation       *location)
 {
         GClueLocationSourcePrivate *priv = source->priv;
-        gdouble heading = gclue_compass_get_heading (priv->compass);
-        gdouble curr_heading = gclue_location_get_heading (location);
+        gdouble heading, curr_heading;
+
+        if (priv->compass == NULL)
+                return FALSE;
+
+        heading = gclue_compass_get_heading (priv->compass);
+        curr_heading = gclue_location_get_heading (location);
 
         if (heading == GCLUE_LOCATION_HEADING_UNKNOWN  ||
             heading == curr_heading)
@@ -248,12 +253,14 @@ start_source (GClueLocationSource *source)
                 return FALSE;
         }
 
-        source->priv->compass = gclue_compass_get_singleton ();
-        source->priv->heading_changed_id =
-                g_signal_connect (G_OBJECT (source->priv->compass),
-                                  "notify::heading",
-                                  G_CALLBACK (on_compass_heading_changed),
-                                  source);
+        if (source->priv->compute_movement) {
+                source->priv->compass = gclue_compass_get_singleton ();
+                source->priv->heading_changed_id = g_signal_connect
+                        (G_OBJECT (source->priv->compass),
+                         "notify::heading",
+                         G_CALLBACK (on_compass_heading_changed),
+                         source);
+        }
 
         g_object_notify (G_OBJECT (source), "active");
         g_debug ("%s now active", G_OBJECT_TYPE_NAME (source));
@@ -276,9 +283,11 @@ stop_source (GClueLocationSource *source)
                 return FALSE;
         }
 
-        g_signal_handler_disconnect (source->priv->compass,
-                                     source->priv->heading_changed_id);
-        g_clear_object (&source->priv->compass);
+        if (source->priv->compass) {
+                g_signal_handler_disconnect (source->priv->compass,
+                                             source->priv->heading_changed_id);
+                g_clear_object (&source->priv->compass);
+        }
 
         g_object_notify (G_OBJECT (source), "active");
         g_debug ("%s now inactive", G_OBJECT_TYPE_NAME (source));
