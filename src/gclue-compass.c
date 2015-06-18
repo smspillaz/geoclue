@@ -85,6 +85,7 @@ gclue_compass_finalize (GObject *object)
                                    error->message);
                         g_error_free (error);
                 }
+                g_debug ("IIO compass released");
                 g_object_unref (priv->proxy);
         }
 
@@ -149,6 +150,7 @@ on_compass_claimed (GObject      *source_object,
 
                 return;
         }
+        g_debug ("IIO compass claimed");
 
         compass = GCLUE_COMPASS (user_data);
         compass->priv->proxy = proxy;
