@@ -74,7 +74,19 @@ gclue_compass_finalize (GObject *object)
 
         g_cancellable_cancel (priv->cancellable);
         g_clear_object (&priv->cancellable);
-        g_clear_object (&priv->proxy);
+
+        if (priv->proxy != NULL) {
+                GError *error = NULL;
+
+                if (!compass_call_release_compass_sync (priv->proxy,
+                                                        NULL,
+                                                        &error)) {
+                        g_warning ("Failed to release compass: %s",
+                                   error->message);
+                        g_error_free (error);
+                }
+                g_object_unref (priv->proxy);
+        }
 
         G_OBJECT_CLASS (gclue_compass_parent_class)->finalize (object);
 }
