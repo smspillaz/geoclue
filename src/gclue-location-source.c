@@ -219,8 +219,8 @@ gclue_location_source_class_init (GClueLocationSourceClass *klass)
                 g_param_spec_boolean ("compute-movement",
                                       "ComputeMovement",
                                       "Whether or not, speed and heading should "
-                                      "be automatically computed and set on new "
-                                      "locations.",
+                                      "be automatically computed (or fetched "
+                                      "from hardware) and set on new locations.",
                                       TRUE,
                                       G_PARAM_READWRITE);
         g_object_class_install_property (object_class,
@@ -416,8 +416,8 @@ gclue_location_source_get_available_accuracy_level (GClueLocationSource *source)
  * gclue_location_source_get_compute_movement
  * @source: a #GClueLocationSource
  *
- * Returns: %TRUE if speed and heading will be automatically computed and set
- * on new locations, %FALSE otherwise.
+ * Returns: %TRUE if speed and heading will be automatically computed (or
+ * fetched from hardware) and set on new locations, %FALSE otherwise.
  **/
 gboolean
 gclue_location_source_get_compute_movement (GClueLocationSource *source)
@@ -433,7 +433,7 @@ gclue_location_source_get_compute_movement (GClueLocationSource *source)
  * @compute: a #gboolean
  *
  * Use this to specify whether or not you want @source to automatically compute
- * and set speed and heading on new locations.
+ * (or fetch from hardware) and set speed and heading on new locations.
  **/
 void
 gclue_location_source_set_compute_movement (GClueLocationSource *source,
