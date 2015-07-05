@@ -28,6 +28,7 @@
 #include "public-api/gclue-enum-types.h"
 
 #include "gclue-wifi.h"
+#include "gclue-config.h"
 
 #if GCLUE_USE_3G_SOURCE
 #include "gclue-3g.h"
@@ -282,6 +283,7 @@ gclue_locator_constructed (GObject *object)
 {
         GClueLocator *locator = GCLUE_LOCATOR (object);
         GClueLocationSource *submit_source = NULL;
+        GClueConfig *gconfig = gclue_config_get_singleton ();
         GList *node;
 
         G_OBJECT_CLASS (gclue_locator_parent_class)->constructed (object);
@@ -303,7 +305,7 @@ gclue_locator_constructed (GObject *object)
         submit_source = GCLUE_LOCATION_SOURCE (gps);
 #endif
 #if GCLUE_USE_NMEA_SOURCE
-        {
+        if (gclue_config_get_enable_nmea_source (gconfig)) {
                 GClueNMEASource *nmea = gclue_nmea_source_get_singleton ();
                 locator->priv->sources = g_list_append (locator->priv->sources,
                                                         nmea);

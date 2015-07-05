@@ -7,6 +7,12 @@
 # separated by a ';'.
 whitelist=@demo_agent@gnome-shell
 
+# Network NMEA source configuration options
+[network-nmea]
+
+# Fetch location from NMEA sources on local network?
+enable=true
+
 # WiFi source configuration options
 [wifi]
 
