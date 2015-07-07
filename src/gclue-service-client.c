@@ -313,12 +313,14 @@ on_authorize_app_ready (GObject      *source_object,
                         gpointer      user_data)
 {
         StartData *data = (StartData *) user_data;
+        GClueDBusClient *client = GCLUE_DBUS_CLIENT (data->client);
+        GClueServiceClientPrivate *priv = data->client->priv;
         GError *error = NULL;
         gboolean authorized = FALSE;
         GClueAccuracyLevel accuracy_level;
 
         accuracy_level = gclue_dbus_client_get_requested_accuracy_level
-                                (GCLUE_DBUS_CLIENT (data->client));
+                                (client);
         if (!gclue_agent_call_authorize_app_finish (GCLUE_AGENT (source_object),
                                                     &authorized,
                                                     &accuracy_level,
@@ -327,10 +329,21 @@ on_authorize_app_ready (GObject      *source_object,
                 goto error_out;
 
         if (!authorized) {
-                g_set_error_literal (&error,
-                                     G_DBUS_ERROR,
-                                     G_DBUS_ERROR_ACCESS_DENIED,
-                                     "Access denied");
+                const char *desktop_id;
+                guint32 uid;
+
+                desktop_id = gclue_dbus_client_get_desktop_id (client);
+                uid = gclue_client_info_get_user_id (priv->client_info);
+
+                g_set_error (&error,
+                             G_DBUS_ERROR,
+                             G_DBUS_ERROR_ACCESS_DENIED,
+                             "Agent rejected '%s' for user '%u'. Please ensure "
+                             "that '%s' has installed a valid %s.desktop file.",
+                             desktop_id,
+                             uid,
+                             desktop_id,
+                             desktop_id);
                 goto error_out;
         }
 
