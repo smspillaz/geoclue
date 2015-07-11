@@ -208,6 +208,7 @@ AC_CONFIG_FILES([
   src/public-api/Makefile
   po/Makefile.in
   data/org.freedesktop.GeoClue2.conf
+  data/org.freedesktop.GeoClue2.Agent.conf
   data/Makefile
   demo/Makefile
   docs/Makefile
