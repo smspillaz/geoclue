@@ -41,6 +41,10 @@
 #include "gclue-modem-gps.h"
 #endif
 
+#if GCLUE_USE_NMEA_SOURCE
+#include "gclue-nmea-source.h"
+#endif
+
 /* This class is like a master location source that hides all individual
  * location sources from rest of the code
  */
@@ -297,6 +301,13 @@ gclue_locator_constructed (GObject *object)
         GClueModemGPS *gps = gclue_modem_gps_get_singleton ();
         locator->priv->sources = g_list_append (locator->priv->sources, gps);
         submit_source = GCLUE_LOCATION_SOURCE (gps);
+#endif
+#if GCLUE_USE_NMEA_SOURCE
+        {
+                GClueNMEASource *nmea = gclue_nmea_source_get_singleton ();
+                locator->priv->sources = g_list_append (locator->priv->sources,
+                                                        nmea);
+        }
 #endif
 
         for (node = locator->priv->sources; node != NULL; node = node->next) {

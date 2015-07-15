@@ -66,6 +66,7 @@ noinst_LTLIBRARIES = libgeoclue.la
 
 AM_CPPFLAGS = $(GEOCLUE_CFLAGS) 		     	  \
 	      $(ModemManager_CFLAGS)			  \
+	      $(NMEA_SOURCE_CFLAGS)			  \
 	      $(WARN_CFLAGS)			     	  \
 	      -DLOCALEDIR="\"$(datadir)/locale\"" 	  \
 	      -DG_LOG_DOMAIN=\""Geoclue"\"	     	  \
@@ -126,9 +127,14 @@ if BUILD_MODEM_GPS_SOURCE
 libgeoclue_la_SOURCES += gclue-modem-gps.c gclue-modem-gps.h
 endif
 
+if BUILD_NMEA_SOURCE
+libgeoclue_la_SOURCES += gclue-nmea-source.h gclue-nmea-source.c
+endif
+
 libgeoclue_la_LIBADD = \
 	$(GEOCLUE_LIBS)			\
 	$(ModemManager_LIBS)		\
+	$(NMEA_SOURCE_LIBS)		\
 	$(LIBS)				\
 	$(NULL)
 

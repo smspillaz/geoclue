@@ -41,6 +41,7 @@ GLIB_MIN_VERSION=2.34.0
 JSON_GLIB_MIN_VERSION=0.14
 LIBMM_GLIB_MIN_VERSION=1.0
 LIBSOUP_MIN_VERSION=2.42
+AVAHI_MIN_VERSION=0.6.10
 
 AC_CHECK_LIB([m],[sin])
 
@@ -102,6 +103,26 @@ AM_CONDITIONAL([BUILD_MODEM_SOURCE], [test "x$build_modem_source" = "xyes"])
 # Check for ModemManager if one of the sources requires it
 if test "x$require_modemmanager" = "xyes"; then
   PKG_CHECK_MODULES(ModemManager, mm-glib >= $LIBMM_GLIB_MIN_VERSION)
+fi
+
+# Network NMEA Source
+AC_ARG_ENABLE(nmea-source,
+              AS_HELP_STRING([--disable-nmea-source],
+                             [Disable network NMEA source (requires avahi-client and avahi-glib)]),
+              [build_nmea_source=$enableval], [build_nmea_source=yes])
+
+if test "x$build_nmea_source" = "xyes"; then
+  AC_DEFINE([GCLUE_USE_NMEA_SOURCE], [1], [Build network NMEA source?])
+else
+  AC_DEFINE([GCLUE_USE_NMEA_SOURCE], [0], [Build network NMEA source?])
+fi
+AM_CONDITIONAL([BUILD_NMEA_SOURCE], [test "x$build_nmea_source" = "xyes"])
+
+if test "x$build_nmea_source" = "xyes"; then
+    # Check for avahi-client and avahi-glib
+    PKG_CHECK_MODULES(NMEA_SOURCE, [
+                      avahi-client >= $AVAHI_MIN_VERSION
+                      avahi-glib >= $AVAHI_MIN_VERSION])
 fi
 
 # Demo agent
@@ -208,4 +229,5 @@ AC_MSG_NOTICE([
         3G source:                ${build_3g_source}
         CDMA source:              ${build_cdma_source}
         Modem GPS source:         ${build_modem_gps_source}
+        Network NMEA source:      ${build_nmea_source}
 ])
