@@ -368,9 +368,12 @@ gclue_service_client_handle_start (GClueDBusClient       *client,
         GClueAppPerm app_perm;
         guint32 uid;
 
-        if (priv->locator != NULL)
+        if (priv->locator != NULL) {
                 /* Already started */
+                gclue_dbus_client_complete_start (client, invocation);
+
                 return TRUE;
+        }
 
         desktop_id = gclue_dbus_client_get_desktop_id (client);
         if (desktop_id == NULL) {
