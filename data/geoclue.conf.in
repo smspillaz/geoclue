@@ -36,6 +36,12 @@ submission-nick=geoclue
 
 # Application configuration options
 #
+# NOTE: Having an entry here for an application with allowed=true means that
+#       geoclue will not ask agent to authorize the application. This is to
+#       ensure that system components and applications with built-in
+#       authorization mechanism (e.g web browsers) do not have to be bound to
+#       agents.
+#
 # Format:
 #
 # # Desktop ID of application without .desktop part
