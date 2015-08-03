@@ -295,7 +295,7 @@ gclue_config_get_app_perm (GClueConfig     *config,
         gsize i;
         guint64 uid;
 
-        g_return_val_if_fail (desktop_id != NULL, FALSE);
+        g_return_val_if_fail (desktop_id != NULL, GCLUE_APP_PERM_DISALLOWED);
 
         for (node = priv->app_configs; node != NULL; node = node->next) {
                 if (strcmp (((AppConfig *) node->data)->id, desktop_id) == 0) {
