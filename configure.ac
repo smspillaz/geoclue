@@ -61,46 +61,46 @@ PKG_CHECK_MODULES(GEOCLUE, [
 AC_ARG_ENABLE(3g-source,
               AS_HELP_STRING([--disable-3g-source], [Disable 3G backend (requires ModemManager)]),
               [build_3g_source=$enableval], [build_3g_source=yes])
-if test "$build_3g_source" = "yes"; then
+if test "x$build_3g_source" = "xyes"; then
   build_modem_source=yes
   AC_DEFINE([GCLUE_USE_3G_SOURCE], [1], [Build 3G source?])
 else
   AC_DEFINE([GCLUE_USE_3G_SOURCE], [0], [Build 3G source?])
 fi
-AM_CONDITIONAL([BUILD_3G_SOURCE], [test "$build_3g_source" = "yes"])
+AM_CONDITIONAL([BUILD_3G_SOURCE], [test "x$build_3g_source" = "xyes"])
 
 # CDMA source
 AC_ARG_ENABLE(cdma-source,
               AS_HELP_STRING([--disable-cdma-source], [Disable CDMA backend (requires ModemManager)]),
               [build_cdma_source=$enableval], [build_cdma_source=yes])
-if test "$build_cdma_source" = "yes"; then
+if test "x$build_cdma_source" = "xyes"; then
   build_modem_source=yes
   AC_DEFINE([GCLUE_USE_CDMA_SOURCE], [1], [Build CDMA source?])
 else
   AC_DEFINE([GCLUE_USE_CDMA_SOURCE], [0], [Build CDMA source?])
 fi
-AM_CONDITIONAL([BUILD_CDMA_SOURCE], [test "$build_cdma_source" = "yes"])
+AM_CONDITIONAL([BUILD_CDMA_SOURCE], [test "x$build_cdma_source" = "xyes"])
 
 # GPS source
 AC_ARG_ENABLE(modem-gps-source,
               AS_HELP_STRING([--disable-modem-gps-source], [Disable modem GPS backend (requires ModemManager)]),
               [build_modem_gps_source=$enableval], [build_modem_gps_source=yes])
-if test "$build_modem_gps_source" = "yes"; then
+if test "x$build_modem_gps_source" = "xyes"; then
   build_modem_source=yes
   AC_DEFINE([GCLUE_USE_MODEM_GPS_SOURCE], [1], [Build modem GPS source?])
 else
   AC_DEFINE([GCLUE_USE_MODEM_GPS_SOURCE], [0], [Build modem GPS source?])
 fi
-AM_CONDITIONAL([BUILD_MODEM_GPS_SOURCE], [test "$build_modem_gps_source" = "yes"])
+AM_CONDITIONAL([BUILD_MODEM_GPS_SOURCE], [test "x$build_modem_gps_source" = "xyes"])
 
 # Modem source is used in common by GPS, 3G and CDMA sources
-if test "$build_modem_source" = "yes"; then
+if test "x$build_modem_source" = "xyes"; then
   require_modemmanager=yes
 fi
-AM_CONDITIONAL([BUILD_MODEM_SOURCE], [test "$build_modem_source" = "yes"])
+AM_CONDITIONAL([BUILD_MODEM_SOURCE], [test "x$build_modem_source" = "xyes"])
 
 # Check for ModemManager if one of the sources requires it
-if test "$require_modemmanager" = "yes"; then
+if test "x$require_modemmanager" = "xyes"; then
   PKG_CHECK_MODULES(ModemManager, mm-glib >= $LIBMM_GLIB_MIN_VERSION)
 fi
 
