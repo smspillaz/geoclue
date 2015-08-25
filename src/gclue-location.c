@@ -156,53 +156,6 @@ gclue_location_init (GClueLocation *location)
         location->priv->heading = GCLUE_LOCATION_HEADING_UNKNOWN;
 }
 
-/**
- * gclue_location_new:
- * @latitude: a valid latitude
- * @longitude: a valid longitude
- * @accuracy: accuracy of location in meters
- *
- * Creates a new #GClueLocation object.
- *
- * Returns: a new #GClueLocation object. Use g_object_unref() when done.
- **/
-GClueLocation *
-gclue_location_new (gdouble latitude,
-                    gdouble longitude,
-                    gdouble accuracy)
-{
-        return g_object_new (GCLUE_TYPE_LOCATION,
-                             "latitude", latitude,
-                             "longitude", longitude,
-                             "accuracy", accuracy,
-                             NULL);
-}
-
-/**
- * gclue_location_new_with_description:
- * @latitude: a valid latitude
- * @longitude: a valid longitude
- * @accuracy: accuracy of location in meters
- * @description: a description for the location
- *
- * Creates a new #GClueLocation object.
- *
- * Returns: a new #GClueLocation object. Use g_object_unref() when done.
- **/
-GClueLocation *
-gclue_location_new_with_description (gdouble     latitude,
-                                     gdouble     longitude,
-                                     gdouble     accuracy,
-                                     const char *description)
-{
-        return g_object_new (GCLUE_TYPE_LOCATION,
-                             "latitude", latitude,
-                             "longitude", longitude,
-                             "accuracy", accuracy,
-                             "description", description,
-                             NULL);
-}
-
 static gdouble
 get_accuracy_from_hdop (gdouble hdop)
 {
@@ -281,6 +234,53 @@ parse_altitude_string (const char *altitude,
         }
 
         return g_ascii_strtod (altitude, NULL);
+}
+
+/**
+ * gclue_location_new:
+ * @latitude: a valid latitude
+ * @longitude: a valid longitude
+ * @accuracy: accuracy of location in meters
+ *
+ * Creates a new #GClueLocation object.
+ *
+ * Returns: a new #GClueLocation object. Use g_object_unref() when done.
+ **/
+GClueLocation *
+gclue_location_new (gdouble latitude,
+                    gdouble longitude,
+                    gdouble accuracy)
+{
+        return g_object_new (GCLUE_TYPE_LOCATION,
+                             "latitude", latitude,
+                             "longitude", longitude,
+                             "accuracy", accuracy,
+                             NULL);
+}
+
+/**
+ * gclue_location_new_with_description:
+ * @latitude: a valid latitude
+ * @longitude: a valid longitude
+ * @accuracy: accuracy of location in meters
+ * @description: a description for the location
+ *
+ * Creates a new #GClueLocation object.
+ *
+ * Returns: a new #GClueLocation object. Use g_object_unref() when done.
+ **/
+GClueLocation *
+gclue_location_new_with_description (gdouble     latitude,
+                                     gdouble     longitude,
+                                     gdouble     accuracy,
+                                     const char *description)
+{
+        return g_object_new (GCLUE_TYPE_LOCATION,
+                             "latitude", latitude,
+                             "longitude", longitude,
+                             "accuracy", accuracy,
+                             "description", description,
+                             NULL);
 }
 
 /**
