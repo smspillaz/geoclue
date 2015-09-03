@@ -482,6 +482,31 @@ on_connection_to_location_server (GObject      *object,
 }
 
 static void
+connect_to_service (GClueNMEASource *source)
+{
+        GClueNMEASourcePrivate *priv = source->priv;
+
+        if (priv->all_services == NULL)
+                return;
+
+        priv->client = g_socket_client_new ();
+        g_cancellable_reset (priv->cancellable);
+
+        /* The service with the highest accuracy will be stored in the beginning
+         * of the list.
+         */
+        priv->active_service = (AvahiServiceInfo *) priv->all_services->data;
+
+        g_socket_client_connect_to_host_async
+                (priv->client,
+                 priv->active_service->host_name,
+                 priv->active_service->port,
+                 priv->cancellable,
+                 on_connection_to_location_server,
+                 source);
+}
+
+static void
 gclue_nmea_source_finalize (GObject *gnmea)
 {
         GClueNMEASourcePrivate *priv = GCLUE_NMEA_SOURCE (gnmea)->priv;
@@ -588,33 +613,14 @@ static gboolean
 gclue_nmea_source_start (GClueLocationSource *source)
 {
         GClueLocationSourceClass *base_class;
-        GClueNMEASourcePrivate *priv;
 
         g_return_val_if_fail (GCLUE_IS_NMEA_SOURCE (source), FALSE);
-        priv = GCLUE_NMEA_SOURCE (source)->priv;
 
         base_class = GCLUE_LOCATION_SOURCE_CLASS (gclue_nmea_source_parent_class);
         if (!base_class->start (source))
                 return FALSE;
 
-        if (priv->all_services == NULL)
-                return TRUE;
-
-        priv->client = g_socket_client_new ();
-        g_cancellable_reset (priv->cancellable);
-
-        /* The service with the highest accuracy will be stored in the beginning
-         * of the list.
-         */
-        priv->active_service = (AvahiServiceInfo *) priv->all_services->data;
-
-        g_socket_client_connect_to_host_async
-                (priv->client,
-                 priv->active_service->host_name,
-                 priv->active_service->port,
-                 priv->cancellable,
-                 on_connection_to_location_server,
-                 source);
+        connect_to_service (GCLUE_NMEA_SOURCE (source));
 
         return TRUE;
 }
