@@ -587,7 +587,7 @@ gclue_nmea_source_start (GClueLocationSource *source)
         GClueNMEASourcePrivate *priv;
         GList *all_services;
 
-        g_return_val_if_fail (GCLUE_IS_LOCATION_SOURCE (source), FALSE);
+        g_return_val_if_fail (GCLUE_IS_NMEA_SOURCE (source), FALSE);
         priv = GCLUE_NMEA_SOURCE (source)->priv;
 
         base_class = GCLUE_LOCATION_SOURCE_CLASS (gclue_nmea_source_parent_class);
@@ -627,7 +627,7 @@ gclue_nmea_source_stop (GClueLocationSource *source)
         GClueLocationSourceClass *base_class;
         GError *error = NULL;
 
-        g_return_val_if_fail (GCLUE_IS_LOCATION_SOURCE (source), FALSE);
+        g_return_val_if_fail (GCLUE_IS_NMEA_SOURCE (source), FALSE);
 
         base_class = GCLUE_LOCATION_SOURCE_CLASS (gclue_nmea_source_parent_class);
         if (!base_class->stop (source))
