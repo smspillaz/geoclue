@@ -633,8 +633,6 @@ gclue_nmea_source_stop (GClueLocationSource *source)
         if (!base_class->stop (source))
                 return FALSE;
 
-        g_return_val_if_fail (G_IS_SOCKET_CONNECTION (priv->connection), TRUE);
-
         g_cancellable_cancel (priv->cancellable);
 
         g_io_stream_close (G_IO_STREAM (priv->connection),
