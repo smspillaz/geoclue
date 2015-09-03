@@ -507,6 +507,28 @@ connect_to_service (GClueNMEASource *source)
 }
 
 static void
+disconnect_from_service (GClueNMEASource *source)
+{
+        GClueNMEASourcePrivate *priv = source->priv;
+
+        g_cancellable_cancel (priv->cancellable);
+
+        if (priv->connection != NULL) {
+                GError *error = NULL;
+
+                g_io_stream_close (G_IO_STREAM (priv->connection),
+                                   NULL,
+                                   &error);
+                if (error != NULL)
+                        g_warning ("Error in closing socket connection: %s", error->message);
+        }
+
+        g_clear_object (&priv->connection);
+        g_clear_object (&priv->client);
+        priv->active_service = NULL;
+}
+
+static void
 gclue_nmea_source_finalize (GObject *gnmea)
 {
         GClueNMEASourcePrivate *priv = GCLUE_NMEA_SOURCE (gnmea)->priv;
@@ -628,7 +650,6 @@ gclue_nmea_source_start (GClueLocationSource *source)
 static gboolean
 gclue_nmea_source_stop (GClueLocationSource *source)
 {
-        GClueNMEASourcePrivate *priv = GCLUE_NMEA_SOURCE (source)->priv;
         GClueLocationSourceClass *base_class;
 
         g_return_val_if_fail (GCLUE_IS_NMEA_SOURCE (source), FALSE);
@@ -637,21 +658,7 @@ gclue_nmea_source_stop (GClueLocationSource *source)
         if (!base_class->stop (source))
                 return FALSE;
 
-        g_cancellable_cancel (priv->cancellable);
-
-        if (priv->connection != NULL) {
-                GError *error = NULL;
-
-                g_io_stream_close (G_IO_STREAM (priv->connection),
-                                   NULL,
-                                   &error);
-                if (error != NULL)
-                        g_warning ("Error in closing socket connection: %s", error->message);
-        }
-
-        g_clear_object (&priv->connection);
-        g_clear_object (&priv->client);
-        priv->active_service = NULL;
+        disconnect_from_service (GCLUE_NMEA_SOURCE (source));
 
         return TRUE;
 }
