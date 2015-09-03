@@ -162,7 +162,6 @@ add_new_service (const char *name,
         GEnumClass *enum_class;
         GEnumValue *enum_value;
 
-
         node = avahi_string_list_find (txt, "accuracy");
 
         if (node == NULL) {
