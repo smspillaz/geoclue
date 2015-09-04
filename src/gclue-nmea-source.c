@@ -232,6 +232,7 @@ remove_service (const char      *name,
         if (item == NULL)
                 return;
 
+        avahi_service_free (item->data);
         source->priv->all_services = g_list_delete_link
                 (source->priv->all_services, item);
 
