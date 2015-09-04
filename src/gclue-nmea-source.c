@@ -415,6 +415,7 @@ on_read_gga_sentence (GObject      *object,
                         g_warning ("Error when receiving message: %s",
                                    error->message);
                 g_clear_error (&error);
+                g_object_unref (data_input_stream);
 
                 return;
         }
@@ -477,7 +478,6 @@ on_connection_to_location_server (GObject      *object,
                                              source->priv->cancellable,
                                              on_read_gga_sentence,
                                              source);
-        g_object_unref (data_input_stream);
 }
 
 static void
