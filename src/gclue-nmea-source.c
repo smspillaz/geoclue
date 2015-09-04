@@ -153,6 +153,7 @@ reconnect_service (GClueNMEASource *source)
         if (!reconnection_required (source))
                 return;
 
+        g_print ("reconnecting\n");
         disconnect_from_service (source);
         connect_to_service (source);
 }
@@ -160,10 +161,11 @@ reconnect_service (GClueNMEASource *source)
 static void
 refresh_accuracy_level (GClueNMEASource *source)
 {
+        GClueLocationSource *location_source = GCLUE_LOCATION_SOURCE (source);
         GClueAccuracyLevel new, existing;
 
         existing = gclue_location_source_get_available_accuracy_level
-                        (GCLUE_LOCATION_SOURCE (source));
+                        (location_source);
 
         if (source->priv->all_services != NULL) {
                 AvahiServiceInfo *service;
@@ -539,6 +541,7 @@ connect_to_service (GClueNMEASource *source)
                  priv->cancellable,
                  on_connection_to_location_server,
                  source);
+        g_print ("\nstarted connecting\n");
 }
 
 static void
@@ -561,6 +564,7 @@ disconnect_from_service (GClueNMEASource *source)
         g_clear_object (&priv->connection);
         g_clear_object (&priv->client);
         priv->active_service = NULL;
+        g_print ("\ndisconnected\n");
 }
 
 static void
