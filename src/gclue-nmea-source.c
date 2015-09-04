@@ -597,15 +597,15 @@ gclue_nmea_source_start (GClueLocationSource *source)
         if (!base_class->start (source))
                 return FALSE;
 
+        if (priv->all_services == NULL)
+                return TRUE;
+
         priv->client = g_socket_client_new ();
         g_cancellable_reset (priv->cancellable);
 
         /* The service with the highest accuracy will be stored in the beginning
          * of the list.
          */
-        if (priv->all_services == NULL)
-                return TRUE;
-
         priv->active_service = (AvahiServiceInfo *) priv->all_services->data;
 
         g_socket_client_connect_to_host_async
