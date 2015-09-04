@@ -229,6 +229,8 @@ remove_service (const char      *name,
         item = g_list_find_custom (source->priv->all_services,
                                    service,
                                    compare_avahi_service_by_identifier);
+        if (item == NULL)
+                return;
 
         source->priv->all_services = g_list_delete_link
                 (source->priv->all_services, item);
