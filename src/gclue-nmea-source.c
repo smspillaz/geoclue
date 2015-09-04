@@ -463,7 +463,8 @@ on_connection_to_location_server (GObject      *object,
                  &error);
 
         if (error != NULL) {
-                g_warning ("%s", error->message);
+                if (error->code != G_IO_ERROR_CANCELLED)
+                        g_warning ("Failed to connect to NMEA service: %s", error->message);
                 g_clear_error (&error);
 
                 return;
