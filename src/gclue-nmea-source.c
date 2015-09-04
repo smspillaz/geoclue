@@ -58,6 +58,11 @@ gclue_nmea_source_start (GClueLocationSource *source);
 static gboolean
 gclue_nmea_source_stop (GClueLocationSource *source);
 
+static void
+connect_to_service (GClueNMEASource *source);
+static void
+disconnect_from_service (GClueNMEASource *source);
+
 struct AvahiServiceInfo {
     char *identifier;
     char *host_name;
@@ -119,6 +124,32 @@ compare_avahi_service_by_accuracy (gconstpointer a,
                 return 0;
 
         return diff > 0 ? 1 : -1;
+}
+
+static gboolean
+reconnection_required (GClueNMEASource *source)
+{
+        GClueNMEASourcePrivate *priv = source->priv;
+
+        /* Basically, reconnection is required if either
+         *
+         * 1. service in use went down.
+         * 2. a more accurate service than one currently in use, is now
+         *    available.
+         */
+        return (priv->active_service != NULL &&
+                (priv->all_services == NULL ||
+                 priv->active_service != priv->all_services->data));
+}
+
+static void
+reconnect_service (GClueNMEASource *source)
+{
+        if (!reconnection_required (source))
+                return;
+
+        disconnect_from_service (source);
+        connect_to_service (source);
 }
 
 static void
@@ -202,10 +233,8 @@ CREATE_SERVICE:
                  service,
                  compare_avahi_service_by_accuracy);
 
-        /* FIXME: If a new service with better accuracy comes in,
-         *        connect to it (if source is running).
-         */
         refresh_accuracy_level (source);
+        reconnect_service (source);
 
         n_services = g_list_length (source->priv->all_services);
 
@@ -244,6 +273,7 @@ remove_service (const char      *name,
                  n_services);
 
         refresh_accuracy_level (source);
+        reconnect_service (source);
 }
 
 static void
