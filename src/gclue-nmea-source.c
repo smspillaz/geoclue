@@ -610,7 +610,7 @@ gclue_nmea_source_start (GClueLocationSource *source)
         }
 
         if (priv->active_service == NULL) {
-                return FALSE;
+                return TRUE;
         }
 
         g_socket_client_connect_to_host_async
