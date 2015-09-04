@@ -229,6 +229,8 @@ remove_service (const char      *name,
         item = g_list_find_custom (source->priv->all_services,
                                    service,
                                    compare_avahi_service_by_identifier);
+        avahi_service_free (service);
+
         if (item == NULL)
                 return;
 
@@ -240,8 +242,6 @@ remove_service (const char      *name,
 
         g_debug ("No. of _nmea-0183._tcp services %u",
                  n_services);
-
-        avahi_service_free (service);
 
         refresh_accuracy_level (source);
 }
