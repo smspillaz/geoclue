@@ -644,7 +644,7 @@ gclue_nmea_source_stop (GClueLocationSource *source)
                            NULL,
                            &error);
         if (error != NULL) {
-                g_warning ("Error in closing socket connection");
+                g_warning ("Error in closing socket connection: %s", error->message);
 
                 return FALSE;
         }
