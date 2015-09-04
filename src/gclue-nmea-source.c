@@ -630,7 +630,6 @@ gclue_nmea_source_stop (GClueLocationSource *source)
 {
         GClueNMEASourcePrivate *priv = GCLUE_NMEA_SOURCE (source)->priv;
         GClueLocationSourceClass *base_class;
-        GError *error = NULL;
 
         g_return_val_if_fail (GCLUE_IS_NMEA_SOURCE (source), FALSE);
 
@@ -640,11 +639,15 @@ gclue_nmea_source_stop (GClueLocationSource *source)
 
         g_cancellable_cancel (priv->cancellable);
 
-        g_io_stream_close (G_IO_STREAM (priv->connection),
-                           NULL,
-                           &error);
-        if (error != NULL)
-                g_warning ("Error in closing socket connection: %s", error->message);
+        if (priv->connection != NULL) {
+                GError *error = NULL;
+
+                g_io_stream_close (G_IO_STREAM (priv->connection),
+                                   NULL,
+                                   &error);
+                if (error != NULL)
+                        g_warning ("Error in closing socket connection: %s", error->message);
+        }
 
         g_clear_object (&priv->connection);
         g_clear_object (&priv->client);
