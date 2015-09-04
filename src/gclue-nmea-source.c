@@ -589,7 +589,6 @@ gclue_nmea_source_start (GClueLocationSource *source)
 {
         GClueLocationSourceClass *base_class;
         GClueNMEASourcePrivate *priv;
-        GList *all_services;
 
         g_return_val_if_fail (GCLUE_IS_NMEA_SOURCE (source), FALSE);
         priv = GCLUE_NMEA_SOURCE (source)->priv;
@@ -604,14 +603,10 @@ gclue_nmea_source_start (GClueLocationSource *source)
         /* The service with the highest accuracy will be stored in the beginning
          * of the list.
          */
-        all_services = priv->all_services;
-        if (all_services != NULL) {
-                priv->active_service = (AvahiServiceInfo *) all_services->data;
-        }
-
-        if (priv->active_service == NULL) {
+        if (priv->all_services == NULL)
                 return TRUE;
-        }
+
+        priv->active_service = (AvahiServiceInfo *) priv->all_services->data;
 
         g_socket_client_connect_to_host_async
                 (priv->client,
