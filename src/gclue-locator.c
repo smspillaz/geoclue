@@ -204,6 +204,9 @@ on_avail_accuracy_level_changed (GObject    *gobject,
             priv->accuracy_level >= level &&
             !is_source_active (locator, src)) {
                 start_source (locator, src);
+
+                priv->active_sources =
+                        g_list_append (locator->priv->active_sources, src);
         } else if ((level == GCLUE_ACCURACY_LEVEL_NONE ||
                     priv->accuracy_level < level) &&
                    is_source_active (locator, src)) {
