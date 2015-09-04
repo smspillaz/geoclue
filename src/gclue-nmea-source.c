@@ -646,8 +646,8 @@ gclue_nmea_source_stop (GClueLocationSource *source)
         if (error != NULL)
                 g_warning ("Error in closing socket connection: %s", error->message);
 
-        g_object_unref (priv->client);
-        g_object_unref (priv->connection);
+        g_clear_object (&priv->connection);
+        g_clear_object (&priv->client);
         priv->active_service = NULL;
 
         return TRUE;
