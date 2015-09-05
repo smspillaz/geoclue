@@ -68,6 +68,7 @@ struct AvahiServiceInfo {
     char *host_name;
     guint16 port;
     GClueAccuracyLevel accuracy;
+    guint64 timestamp;
 };
 
 static void
@@ -86,12 +87,16 @@ avahi_service_new (const char        *identifier,
                    guint16            port,
                    GClueAccuracyLevel accuracy)
 {
+        GTimeVal tv;
+
         AvahiServiceInfo *service = g_slice_new0 (AvahiServiceInfo);
 
         service->identifier = g_strdup (identifier);
         service->host_name = g_strdup (host_name);
         service->port = port;
         service->accuracy = accuracy;
+        g_get_current_time (&tv);
+        service->timestamp = tv.tv_sec;
 
         return service;
 }
@@ -109,8 +114,8 @@ compare_avahi_service_by_identifier (gconstpointer a,
 }
 
 static gint
-compare_avahi_service_by_accuracy (gconstpointer a,
-                                   gconstpointer b)
+compare_avahi_service_by_accuracy_n_time (gconstpointer a,
+                                          gconstpointer b)
 {
         AvahiServiceInfo *first, *second;
         gint diff;
@@ -120,8 +125,8 @@ compare_avahi_service_by_accuracy (gconstpointer a,
 
         diff = second->accuracy - first->accuracy;
 
-        if (diff == 0)
-                return 0;
+        if (diff != 0)
+                return first->timestamp - second->timestamp;
 
         return diff;
 }
@@ -231,7 +236,7 @@ CREATE_SERVICE:
         source->priv->all_services = g_list_insert_sorted
                 (source->priv->all_services,
                  service,
-                 compare_avahi_service_by_accuracy);
+                 compare_avahi_service_by_accuracy_n_time);
 
         refresh_accuracy_level (source);
         reconnect_service (source);
