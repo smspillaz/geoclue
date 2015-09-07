@@ -455,7 +455,9 @@ on_read_gga_sentence (GObject      *object,
 
         if (message == NULL) {
                 if (error != NULL) {
-                        if (error->code != G_IO_ERROR_CANCELLED)
+                        if (error->code == G_IO_ERROR_CLOSED)
+                                g_debug ("Socket closed.");
+                        else if (error->code != G_IO_ERROR_CANCELLED)
                                 g_warning ("Error when receiving message: %s",
                                            error->message);
                         g_error_free (error);
