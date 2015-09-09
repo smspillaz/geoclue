@@ -89,6 +89,9 @@ GClueLocation *gclue_location_create_from_gga
                                   (const char *gga,
                                    GError    **error);
 
+GClueLocation *gclue_location_duplicate
+                                  (GClueLocation *location);
+
 void gclue_location_set_speed     (GClueLocation *loc,
                                    gdouble        speed);
 
