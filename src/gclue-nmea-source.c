@@ -446,10 +446,14 @@ on_read_gga_sentence (GObject      *object,
                                                         &error);
 
         if (message == NULL) {
-                if (error->code != G_IO_ERROR_CANCELLED)
-                        g_warning ("Error when receiving message: %s",
-                                   error->message);
-                g_clear_error (&error);
+                if (error != NULL) {
+                        if (error->code != G_IO_ERROR_CANCELLED)
+                                g_warning ("Error when receiving message: %s",
+                                           error->message);
+                        g_error_free (error);
+                } else {
+                        g_debug ("Nothing to read");
+                }
                 g_object_unref (data_input_stream);
 
                 return;
