@@ -157,6 +157,22 @@ geocode_location_set_crs(GeocodeLocation   *loc,
 }
 
 static void
+geocode_location_set_timestamp (GeocodeLocation *location,
+                                guint64          timestamp)
+{
+        if (timestamp != 0) {
+                location->priv->timestamp = timestamp;
+        } else {
+            GTimeVal tv;
+
+            g_get_current_time (&tv);
+            location->priv->timestamp = tv.tv_sec;
+        }
+        g_print ("\nset location ts to '%lu'\n",
+                 location->priv->timestamp);
+}
+
+static void
 geocode_location_set_property(GObject      *object,
                               guint         property_id,
                               const GValue *value,
@@ -193,6 +209,11 @@ geocode_location_set_property(GObject      *object,
         case PROP_CRS:
                 geocode_location_set_crs (location,
                                           g_value_get_enum (value));
+                break;
+
+        case PROP_TIMESTAMP:
+                geocode_location_set_timestamp (location,
+                                                g_value_get_uint64 (value));
                 break;
 
         default:
@@ -587,7 +608,8 @@ geocode_location_class_init (GeocodeLocationClass *klass)
                                      0,
                                      G_MAXINT64,
                                      0,
-                                     G_PARAM_READABLE |
+                                     G_PARAM_READWRITE |
+                                     G_PARAM_CONSTRUCT_ONLY |
                                      G_PARAM_STATIC_STRINGS);
         g_object_class_install_property (glocation_class, PROP_TIMESTAMP, pspec);
 }
@@ -595,14 +617,10 @@ geocode_location_class_init (GeocodeLocationClass *klass)
 static void
 geocode_location_init (GeocodeLocation *location)
 {
-        GTimeVal tv;
-
         location->priv = G_TYPE_INSTANCE_GET_PRIVATE ((location),
                                                       GEOCODE_TYPE_LOCATION,
                                                       GeocodeLocationPrivate);
 
-        g_get_current_time (&tv);
-        location->priv->timestamp = tv.tv_sec;
         location->priv->altitude = GEOCODE_LOCATION_ALTITUDE_UNKNOWN;
         location->priv->accuracy = GEOCODE_LOCATION_ACCURACY_UNKNOWN;
         location->priv->crs = GEOCODE_LOCATION_CRS_WGS84;
