@@ -482,9 +482,9 @@ gclue_location_set_speed_from_prev_location (GClueLocation *location,
                           GCLUE_IS_LOCATION (prev_location));
 
         if (prev_location == NULL) {
-               location->priv->speed = GCLUE_LOCATION_SPEED_UNKNOWN;
+               speed = GCLUE_LOCATION_SPEED_UNKNOWN;
 
-               return;
+               goto out;
         }
 
         gloc = GEOCODE_LOCATION (location);
@@ -498,6 +498,7 @@ gclue_location_set_speed_from_prev_location (GClueLocation *location,
         speed = geocode_location_get_distance_from (gloc, prev_gloc) *
                 1000.0 / (timestamp - prev_timestamp);
 
+out:
         location->priv->speed = speed;
 
         g_object_notify (G_OBJECT (location), "speed");
