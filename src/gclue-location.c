@@ -493,7 +493,7 @@ gclue_location_set_speed_from_prev_location (GClueLocation *location,
         timestamp = geocode_location_get_timestamp (gloc);
         prev_timestamp = geocode_location_get_timestamp (prev_gloc);
 
-        if (timestamp == prev_timestamp) {
+        if (timestamp <= prev_timestamp) {
                speed = GCLUE_LOCATION_SPEED_UNKNOWN;
 
                goto out;
