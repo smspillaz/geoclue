@@ -174,13 +174,10 @@ if test x$cross_compiling != xyes; then
 else
 	AC_PATH_PROG([GDBUS_CODEGEN],[gdbus-codegen])
 fi
-AC_SUBST([GDBUS_CODEGEN])
 
-if test "x$GDBUS_CODEGEN" = "x"; then
-	ifelse([$2],,[AC_MSG_ERROR([gdbus-codegen not found.])],[$2])
-else
-	ifelse([$1],,[:],[$1])
-fi
+AS_IF([test "$GDBUS_CODEGEN" = ""],[
+	AC_MSG_ERROR([gdbus-codegen not found])
+])
 
 # systemd
 AC_ARG_WITH([systemdsystemunitdir],
