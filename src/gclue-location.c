@@ -340,6 +340,33 @@ out:
 }
 
 /**
+ * gclue_location_duplicate:
+ * @location: the #GClueLocation instance to duplicate.
+ *
+ * Creates a new copy of @location object.
+ *
+ * Returns: a new #GClueLocation object. Use g_object_unref() when done.
+ **/
+GClueLocation *
+gclue_location_duplicate (GClueLocation *location)
+{
+        GeocodeLocation *gloc = GEOCODE_LOCATION (location);
+
+        return g_object_new
+                (GCLUE_TYPE_LOCATION,
+                 "description", geocode_location_get_description (gloc),
+                 "latitude", geocode_location_get_latitude (gloc),
+                 "longitude", geocode_location_get_longitude (gloc),
+                 "accuracy", geocode_location_get_accuracy (gloc),
+                 "altitude", geocode_location_get_altitude (gloc),
+                 "crs", geocode_location_get_crs (gloc),
+                 "timestamp", geocode_location_get_timestamp (gloc),
+                 "speed", location->priv->speed,
+                 "heading", location->priv->heading,
+                 NULL);
+}
+
+/**
  * gclue_location_get_speed:
  * @location: a #GClueLocation
  *
