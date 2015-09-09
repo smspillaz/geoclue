@@ -88,17 +88,24 @@ set_location (GClueLocator  *locator,
 
         g_debug ("New location available");
 
-        if (cur_location != NULL &&
-            geocode_location_get_distance_from (gloc, cur_gloc) * 1000 <
-            geocode_location_get_accuracy (gloc) &&
-            geocode_location_get_accuracy (gloc) >
-            geocode_location_get_accuracy (cur_gloc)) {
-                /* We only take the new location if either the previous one
-                 * lies outside its accuracy circle or its more or as
-                 * accurate as previous one.
-                 */
-                g_debug ("Ignoring less accurate new location");
-                return;
+        if (cur_location != NULL) {
+            if (geocode_location_get_timestamp (gloc) <
+                geocode_location_get_timestamp (cur_gloc)) {
+                    g_debug ("New location older than current, ignoring.");
+                    return;
+            }
+
+            if (geocode_location_get_distance_from (gloc, cur_gloc) * 1000 <
+                geocode_location_get_accuracy (gloc) &&
+                geocode_location_get_accuracy (gloc) >
+                geocode_location_get_accuracy (cur_gloc)) {
+                    /* We only take the new location if either the previous one
+                     * lies outside its accuracy circle or its more or as
+                     * accurate as previous one.
+                     */
+                    g_debug ("Ignoring less accurate new location");
+                    return;
+            }
         }
 
         gclue_location_source_set_location (GCLUE_LOCATION_SOURCE (locator),
