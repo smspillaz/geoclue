@@ -89,7 +89,7 @@ set_location (GClueLocator  *locator,
         g_debug ("New location available");
 
         if (cur_location != NULL &&
-            geocode_location_get_distance_from (gloc, cur_gloc) <
+            geocode_location_get_distance_from (gloc, cur_gloc) * 1000 <
             geocode_location_get_accuracy (gloc) &&
             geocode_location_get_accuracy (gloc) >
             geocode_location_get_accuracy (cur_gloc)) {
