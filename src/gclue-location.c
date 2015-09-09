@@ -25,6 +25,8 @@
 
 #include "gclue-location.h"
 #include <math.h>
+#include <string.h>
+#include <stdlib.h>
 
 struct _GClueLocationPrivate {
         gdouble speed;
@@ -236,6 +238,59 @@ parse_altitude_string (const char *altitude,
         return g_ascii_strtod (altitude, NULL);
 }
 
+static gint64
+parse_nmea_timestamp (const char *nmea_ts)
+{
+        char parts[3][3];
+        int i, hours, minutes, seconds;
+        GDateTime *now, *ts = NULL;
+        guint64 ret;
+
+        now = g_date_time_new_now_utc ();
+        ret = g_date_time_to_unix (now);
+
+        if (strlen (nmea_ts) < 6) {
+                g_warning ("Failed to parse NMEA timestamp '%s'", nmea_ts);
+
+                goto parse_error;
+        }
+
+        for (i = 0; i < 3; i++) {
+                memmove (parts[i], nmea_ts + (i * 2), 2);
+                parts[i][2] = '\0';
+        }
+        hours = atoi (parts[0]);
+        minutes = atoi (parts[1]);
+        seconds = atoi (parts[2]);
+
+        ts = g_date_time_new_utc (g_date_time_get_year (now),
+                                  g_date_time_get_month (now),
+                                  g_date_time_get_day_of_month (now),
+                                  hours,
+                                  minutes,
+                                  seconds);
+
+        if (g_date_time_difference (now, ts) < 0) {
+                g_debug ("NMEA timestamp '%s' in future. Assuming yesterday's.",
+                         nmea_ts);
+                g_date_time_unref (ts);
+
+                ts = g_date_time_new_utc (g_date_time_get_year (now),
+                                          g_date_time_get_month (now),
+                                          g_date_time_get_day_of_month (now) - 1,
+                                          hours,
+                                          minutes,
+                                          seconds);
+        }
+
+        ret = g_date_time_to_unix (ts);
+        g_date_time_unref (ts);
+parse_error:
+        g_date_time_unref (now);
+
+        return ret;
+}
+
 /**
  * gclue_location_new:
  * @latitude: a valid latitude
@@ -299,6 +354,7 @@ gclue_location_create_from_gga (const char *gga, GError **error)
         GClueLocation *location = NULL;
         gdouble latitude, longitude, accuracy, altitude;
         gdouble hdop; /* Horizontal Dilution Of Precision */
+        guint64 timestamp;
         char **parts;
 
         parts = g_strsplit (gga, ",", -1);
@@ -313,6 +369,7 @@ gclue_location_create_from_gga (const char *gga, GError **error)
         /* For syntax of GGA sentences:
          * http://www.gpsinformation.org/dale/nmea.htm#GGA
          */
+        timestamp = parse_nmea_timestamp (parts[1]);
         latitude = parse_coordinate_string (parts[2], parts[3]);
         longitude = parse_coordinate_string (parts[4], parts[5]);
         if (latitude == INVALID_COORDINATE || longitude == INVALID_COORDINATE) {
@@ -330,7 +387,12 @@ gclue_location_create_from_gga (const char *gga, GError **error)
         hdop = g_ascii_strtod (parts[8], NULL);
         accuracy = get_accuracy_from_hdop (hdop);
 
-        location = gclue_location_new (latitude, longitude, accuracy);
+        location = g_object_new (GCLUE_TYPE_LOCATION,
+                                 "latitude", latitude,
+                                 "longitude", longitude,
+                                 "accuracy", accuracy,
+                                 "timestamp", timestamp,
+                                 NULL);
         if (altitude != GEOCODE_LOCATION_ALTITUDE_UNKNOWN)
                 g_object_set (location, "altitude", altitude, NULL);
 
