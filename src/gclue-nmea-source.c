@@ -248,10 +248,28 @@ CREATE_SERVICE:
 
 static void
 remove_service (GClueNMEASource *source,
-                const char      *name)
+                AvahiServiceInfo *service)
+{
+        guint n_services = 0;
+
+        avahi_service_free (service);
+        source->priv->all_services = g_list_remove
+                (source->priv->all_services, service);
+
+        n_services = g_list_length (source->priv->all_services);
+
+        g_debug ("No. of _nmea-0183._tcp services %u",
+                 n_services);
+
+        refresh_accuracy_level (source);
+        reconnect_service (source);
+}
+
+static void
+remove_service_by_name (GClueNMEASource *source,
+                        const char      *name)
 {
         AvahiServiceInfo *service;
-        guint n_services = 0;
         GList *item;
 
         /* only `name` is required here */
@@ -268,17 +286,7 @@ remove_service (GClueNMEASource *source,
         if (item == NULL)
                 return;
 
-        avahi_service_free (item->data);
-        source->priv->all_services = g_list_delete_link
-                (source->priv->all_services, item);
-
-        n_services = g_list_length (source->priv->all_services);
-
-        g_debug ("No. of _nmea-0183._tcp services %u",
-                 n_services);
-
-        refresh_accuracy_level (source);
-        reconnect_service (source);
+        remove_service (source, item->data);
 }
 
 static void
@@ -413,7 +421,7 @@ browse_callback (AvahiServiceBrowser   *service_browser,
                          type,
                          domain);
 
-                remove_service (GCLUE_NMEA_SOURCE (user_data), name);
+                remove_service_by_name (GCLUE_NMEA_SOURCE (user_data), name);
 
                 break;
 
@@ -455,6 +463,8 @@ on_read_gga_sentence (GObject      *object,
                         g_debug ("Nothing to read");
                 }
                 g_object_unref (data_input_stream);
+
+                remove_service (source, source->priv->active_service);
 
                 return;
         }
