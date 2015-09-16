@@ -184,11 +184,11 @@ refresh_accuracy_level (GClueNMEASource *source)
 }
 
 static void
-add_new_service (const char *name,
+add_new_service (GClueNMEASource *source,
+                 const char *name,
                  const char *host_name,
                  uint16_t port,
-                 AvahiStringList *txt,
-                 GClueNMEASource *source)
+                 AvahiStringList *txt)
 {
         GClueAccuracyLevel accuracy = GCLUE_ACCURACY_LEVEL_NONE;
         AvahiServiceInfo *service;
@@ -247,8 +247,8 @@ CREATE_SERVICE:
 }
 
 static void
-remove_service (const char      *name,
-                GClueNMEASource *source)
+remove_service (GClueNMEASource *source,
+                const char      *name)
 {
         AvahiServiceInfo *service;
         guint n_services = 0;
@@ -323,11 +323,11 @@ resolve_callback (AvahiServiceResolver  *service_resolver,
                          host_name,
                          port);
 
-                add_new_service (name,
+                add_new_service (GCLUE_NMEA_SOURCE (user_data),
+                                 name,
                                  host_name,
                                  port,
-                                 txt,
-                                 GCLUE_NMEA_SOURCE (user_data));
+                                 txt);
 
                 break;
         }
@@ -413,7 +413,7 @@ browse_callback (AvahiServiceBrowser   *service_browser,
                          type,
                          domain);
 
-                remove_service (name, GCLUE_NMEA_SOURCE (user_data));
+                remove_service (GCLUE_NMEA_SOURCE (user_data), name);
 
                 break;
 
