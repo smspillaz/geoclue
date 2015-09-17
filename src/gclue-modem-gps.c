@@ -201,6 +201,8 @@ on_fix_gps (GClueModem *modem,
         if (error != NULL) {
             g_warning ("Error: %s", error->message);
             g_clear_error (&error);
+
+            return;
         }
 
         gclue_location_source_set_location (source,
