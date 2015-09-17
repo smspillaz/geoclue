@@ -250,7 +250,10 @@ parse_nmea_timestamp (const char *nmea_ts)
         ret = g_date_time_to_unix (now);
 
         if (strlen (nmea_ts) < 6) {
-                g_warning ("Failed to parse NMEA timestamp '%s'", nmea_ts);
+                if (strlen (nmea_ts) >= 1)
+                        /* Empty string just means no ts, so no warning */
+                        g_warning ("Failed to parse NMEA timestamp '%s'",
+                                   nmea_ts);
 
                 goto parse_error;
         }
