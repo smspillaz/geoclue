@@ -8,4 +8,11 @@
     <allow send_interface="org.freedesktop.DBus.Properties"
            send_path="/org/freedesktop/GeoClue2/Agent"/>
   </policy>
+
+  <policy user="root">
+    <allow send_interface="org.freedesktop.GeoClue2.Agent"
+           send_path="/org/freedesktop/GeoClue2/Agent"/>
+    <allow send_interface="org.freedesktop.DBus.Properties"
+           send_path="/org/freedesktop/GeoClue2/Agent"/>
+  </policy>
 </busconfig>
