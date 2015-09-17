@@ -464,7 +464,11 @@ on_read_gga_sentence (GObject      *object,
                 }
                 g_object_unref (data_input_stream);
 
-                remove_service (source, source->priv->active_service);
+                if (source->priv->active_service != NULL)
+                        /* In case service did not advertise it exiting
+                         * or we failed to receive it's notification.
+                         */
+                        remove_service (source, source->priv->active_service);
 
                 return;
         }
