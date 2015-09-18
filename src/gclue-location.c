@@ -28,6 +28,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define TIME_DIFF_THRESHOLD 60
+
 struct _GClueLocationPrivate {
         gdouble speed;
         gdouble heading;
@@ -273,7 +275,7 @@ parse_nmea_timestamp (const char *nmea_ts)
                                   minutes,
                                   seconds);
 
-        if (g_date_time_difference (now, ts) < 0) {
+        if (g_date_time_difference (ts, now) > TIME_DIFF_THRESHOLD) {
                 g_debug ("NMEA timestamp '%s' in future. Assuming yesterday's.",
                          nmea_ts);
                 g_date_time_unref (ts);
