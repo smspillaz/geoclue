@@ -64,7 +64,7 @@ BUILT_SOURCES = 		\
 	gclue-marshal.h		\
 	$(NULL)
 
-noinst_LTLIBRARIES = libgeoclue.la
+noinst_LTLIBRARIES = libgeoclue-internal.la
 
 AM_CPPFLAGS = $(GEOCLUE_CFLAGS) 		     	  \
 	      $(ModemManager_CFLAGS)			  \
@@ -79,7 +79,7 @@ AM_CPPFLAGS = $(GEOCLUE_CFLAGS) 		     	  \
 	      -I$(srcdir)/public-api			  \
 	      -I$(builddir)/public-api
 
-libgeoclue_la_SOURCES =	 	 \
+libgeoclue_internal_la_SOURCES = \
 	$(BUILT_SOURCES) 	 \
 	gclue-3g-tower.h 	 \
 	gclue-client-info.h 	 \
@@ -111,29 +111,29 @@ libgeoclue_la_SOURCES =	 	 \
 	$(NULL)
 
 if BUILD_MODEM_SOURCE
-libgeoclue_la_SOURCES += gclue-modem.c	       \
-			 gclue-modem.h	       \
-			 gclue-modem-manager.c \
-			 gclue-modem-manager.h
+libgeoclue_internal_la_SOURCES += gclue-modem.c	        \
+				  gclue-modem.h	       \
+				  gclue-modem-manager.c \
+				  gclue-modem-manager.h
 endif
 
 if BUILD_3G_SOURCE
-libgeoclue_la_SOURCES += gclue-3g.c gclue-3g.h
+libgeoclue_internal_la_SOURCES += gclue-3g.c gclue-3g.h
 endif
 
 if BUILD_CDMA_SOURCE
-libgeoclue_la_SOURCES += gclue-cdma.c gclue-cdma.h
+libgeoclue_internal_la_SOURCES += gclue-cdma.c gclue-cdma.h
 endif
 
 if BUILD_MODEM_GPS_SOURCE
-libgeoclue_la_SOURCES += gclue-modem-gps.c gclue-modem-gps.h
+libgeoclue_internal_la_SOURCES += gclue-modem-gps.c gclue-modem-gps.h
 endif
 
 if BUILD_NMEA_SOURCE
-libgeoclue_la_SOURCES += gclue-nmea-source.h gclue-nmea-source.c
+libgeoclue_internal_la_SOURCES += gclue-nmea-source.h gclue-nmea-source.c
 endif
 
-libgeoclue_la_LIBADD = \
+libgeoclue_internal_la_LIBADD = 	\
 	$(GEOCLUE_LIBS)			\
 	$(ModemManager_LIBS)		\
 	$(NMEA_SOURCE_LIBS)		\
@@ -145,7 +145,7 @@ geoclue_SOURCES =	 	  \
 	$(NULL)
 geoclue_LDADD = $(GEOCLUE_LIBS) 	  		    	\
 		$(LIBS) 		  		    	\
-		$(builddir)/libgeoclue.la		    	\
+		$(builddir)/libgeoclue-internal.la		    	\
 		$(builddir)/agent/libgeoclue-agent.la 		\
 		$(builddir)/geocode-glib/libgeocode-glib.la 	\
 		$(builddir)/public-api/libgeoclue-public-api.la
