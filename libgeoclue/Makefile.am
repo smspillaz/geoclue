@@ -48,6 +48,7 @@ geoclue_include_HEADERS = geoclue.h          \
 			  gclue-client.h     \
 			  gclue-location.h   \
 			  gclue-manager.h    \
+			  gclue-helpers.h    \
 			  $(NULL)
 
 AM_CPPFLAGS = $(LIBGEOCLUE_CFLAGS) 		     	  \
@@ -62,6 +63,7 @@ libgeoclue_2_la_SOURCES =  \
 	gclue-location.c   \
 	gclue-manager.c    \
 	gclue-enum-types.c \
+	gclue-helpers.c    \
 	$(NULL)
 
 libgeoclue_2_la_LIBADD =    \

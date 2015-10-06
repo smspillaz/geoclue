@@ -31,5 +31,6 @@
 #include <gclue-client.h>
 #include <gclue-location.h>
 #include <gclue-manager.h>
+#include <gclue-helpers.h>
 
 #endif /* __GEOCLUE_H__ */
