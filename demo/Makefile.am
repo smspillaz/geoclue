@@ -1,12 +1,20 @@
 demodir = $(libexecdir)/geoclue-2.0/demos
 
+if BUILD_LIBGEOCLUE
 demo_PROGRAMS = where-am-i
+else
+demo_PROGRAMS =
+endif
 
 where_am_i_SOURCES = where-am-i.c
 where_am_i_CFLAGS = $(GEOCLUE_CFLAGS)   		\
 		    $(WARN_CFLAGS)			\
-		    -DLOCALEDIR="\"$(datadir)/locale\""
-where_am_i_LDADD = $(GEOCLUE_LIBS)
+		    -DLOCALEDIR="\"$(datadir)/locale\"" \
+		    -I$(top_builddir)/libgeoclue	\
+		    -I$(top_builddir)/src/public-api
+where_am_i_LDADD = $(GEOCLUE_LIBS) 		\
+		   -L$(top_builddir)/libgeoclue \
+		   -lgeoclue-2
 
 appsdir = $(datadir)/applications
 apps_DATA = geoclue-where-am-i.desktop \
