@@ -58,6 +58,23 @@ PKG_CHECK_MODULES(GEOCLUE, [
   libsoup-2.4 >= $LIBSOUP_MIN_VERSION
 ])
 
+# libgeoclue
+AC_ARG_ENABLE(libgeoclue,
+              AS_HELP_STRING([--disable-libgeoclue], [Disable convenience library]),
+              [build_libgeoclue=$enableval], [build_libgeoclue=yes])
+if test "x$build_libgeoclue" = "xyes"; then
+  PKG_CHECK_MODULES(LIBGEOCLUE, [
+    glib-2.0 >= $GLIB_MIN_VERSION
+    gio-2.0 >= $GLIB_MIN_VERSION
+    gio-unix-2.0 >= $GLIB_MIN_VERSION
+  ])
+  build_libgeoclue=yes
+  AC_DEFINE([BUILD_LIBGEOCLUE], [1], [Build convenience library?])
+else
+  AC_DEFINE([BUILD_LIBGEOCLUE], [0], [Build convenience library?])
+fi
+AM_CONDITIONAL([BUILD_LIBGEOCLUE], [test "x$build_libgeoclue" = "xyes"])
+
 # 3G source
 AC_ARG_ENABLE(3g-source,
               AS_HELP_STRING([--disable-3g-source], [Disable 3G backend (requires ModemManager)]),
@@ -207,6 +224,8 @@ AC_CONFIG_FILES([
   data/org.freedesktop.GeoClue2.conf
   data/org.freedesktop.GeoClue2.Agent.conf
   data/Makefile
+  libgeoclue/Makefile
+  libgeoclue/libgeoclue-$GEOCLUE_API_VERSION.pc:libgeoclue/libgeoclue.pc.in
   demo/Makefile
   docs/Makefile
   docs/version.xml
@@ -224,6 +243,7 @@ AC_MSG_NOTICE([
         c compiler:               ${CC} ${CFLAGS}
         systemdsystemunitdir:     ${systemdsystemunitdir}
 
+        Convenience library:      ${build_libgeoclue}
         3G source:                ${build_3g_source}
         CDMA source:              ${build_cdma_source}
         Modem GPS source:         ${build_modem_gps_source}
