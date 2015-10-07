@@ -236,7 +236,9 @@ AC_CONFIG_FILES([
   libgeoclue/libgeoclue-$GEOCLUE_API_VERSION.pc:libgeoclue/libgeoclue.pc.in
   demo/Makefile
   docs/Makefile
+  docs/lib/Makefile
   docs/version.xml
+  docs/lib/version.xml
 ])
 
 AC_OUTPUT
