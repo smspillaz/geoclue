@@ -5,7 +5,9 @@ libexec_PROGRAMS = geoclue
 SUBDIRS = public-api agent geocode-glib
 
 interfacedir = $(datadir)/dbus-1/interfaces
-interface_DATA = org.freedesktop.GeoClue2.xml
+interface_DATA = org.freedesktop.GeoClue2.Client.xml   \
+		 org.freedesktop.GeoClue2.Location.xml \
+		 org.freedesktop.GeoClue2.Manager.xml
 
 dbus_built_sources = geoclue-interface.c 	\
 		     geoclue-interface.h 	\
