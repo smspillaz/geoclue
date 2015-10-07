@@ -58,6 +58,10 @@ PKG_CHECK_MODULES(GEOCLUE, [
   libsoup-2.4 >= $LIBSOUP_MIN_VERSION
 ])
 
+# GObject-introspection support
+GOBJECT_INTROSPECTION_CHECK([0.9.6])
+build_introspection=no
+
 # libgeoclue
 AC_ARG_ENABLE(libgeoclue,
               AS_HELP_STRING([--disable-libgeoclue], [Disable convenience library]),
@@ -68,7 +72,11 @@ if test "x$build_libgeoclue" = "xyes"; then
     gio-2.0 >= $GLIB_MIN_VERSION
     gio-unix-2.0 >= $GLIB_MIN_VERSION
   ])
+  if test "x$found_introspection" == "xyes"; then
+     build_introspection=yes
+  fi
   build_libgeoclue=yes
+
   AC_DEFINE([BUILD_LIBGEOCLUE], [1], [Build convenience library?])
 else
   AC_DEFINE([BUILD_LIBGEOCLUE], [0], [Build convenience library?])
@@ -244,6 +252,7 @@ AC_MSG_NOTICE([
         systemdsystemunitdir:     ${systemdsystemunitdir}
 
         Convenience library:      ${build_libgeoclue}
+        Introspection:            ${build_introspection}
         3G source:                ${build_3g_source}
         CDMA source:              ${build_cdma_source}
         Modem GPS source:         ${build_modem_gps_source}

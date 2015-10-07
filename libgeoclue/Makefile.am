@@ -74,6 +74,40 @@ libgeoclue_2_la_LIBADD =    \
 CLEANFILES = $(BUILT_SOURCES) \
 	     $(NULL)
 
+if HAVE_INTROSPECTION
+girdir = $(datadir)/gir-1.0
+gir_DATA = Geoclue-2.0.gir
+
+typelibsdir = $(libdir)/girepository-1.0
+typelibs_DATA = Geoclue-2.0.typelib
+
+Geoclue-2.0.gir: $(libgeoclue_2_la_SOURCES) $(geoclue_include_HEADERS)
+	$(AM_V_GEN)$(INTROSPECTION_SCANNER) -v  \
+	    --warn-all                          \
+	    --namespace Geoclue                 \
+	    --identifier-prefix=GClue           \
+	    --symbol-prefix=gclue               \
+	    --nsversion=1.0                     \
+	    --include=Gio-2.0                   \
+	    --library=geoclue-2	                \
+	    --output $@                         \
+	    --pkg=glib-2.0                      \
+	    --pkg=gobject-2.0                   \
+	    --pkg=gio-2.0                       \
+	    --pkg-export=geoclue-2.0            \
+	    --libtool=$(top_builddir)/libtool   \
+	    --c-include='geoclue.h'             \
+	    $^                                  \
+	    $(NULL)
+
+Geoclue-2.0.gir: libgeoclue-2.la $(INTROSPECTION_SCANNER) Makefile.am
+Geoclue-2.0.typelib: Geoclue-2.0.gir $(INTROSPECTION_COMPILER)
+	$(INTROSPECTION_COMPILER) $< -o $@
+
+CLEANFILES += $(gir_DATA) $(typelibs_DATA)
+
+endif # HAVE_INTROSPECTION
+
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libgeoclue-$(GEOCLUE_API_VERSION).pc
 
