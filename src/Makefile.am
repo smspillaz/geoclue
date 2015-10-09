@@ -4,25 +4,52 @@ libexec_PROGRAMS = geoclue
 
 SUBDIRS = public-api agent geocode-glib
 
-interfacedir = $(datadir)/dbus-1/interfaces
-interface_DATA = org.freedesktop.GeoClue2.Client.xml   \
-		 org.freedesktop.GeoClue2.Location.xml \
-		 org.freedesktop.GeoClue2.Manager.xml
+CLIENT_INTERFACE_XML = org.freedesktop.GeoClue2.Client.xml
+LOCATION_INTERFACE_XML = org.freedesktop.GeoClue2.Location.xml
+MANAGER_INTERFACE_XML = org.freedesktop.GeoClue2.Manager.xml
 
-dbus_built_sources = geoclue-interface.c 	\
-		     geoclue-interface.h 	\
+interfacedir = $(datadir)/dbus-1/interfaces
+interface_DATA = $(CLIENT_INTERFACE_XML)   \
+		 $(LOCATION_INTERFACE_XML) \
+		 $(MANAGER_INTERFACE_XML)
+
+dbus_built_sources = gclue-client-interface.c 	\
+		     gclue-client-interface.h 	\
+		     gclue-location-interface.c \
+		     gclue-location-interface.h \
+		     gclue-manager-interface.c 	\
+		     gclue-manager-interface.h 	\
 		     compass-interface.c 	\
 		     compass-interface.h	\
 		     wpa_supplicant-interface.c \
 		     wpa_supplicant-interface.h
-geoclue-interface.c: geoclue-interface.h
-geoclue-interface.h: Makefile.am $(interface_DATA)
+
+gclue-client-interface.c: gclue-client-interface.h
+gclue-client-interface.h: Makefile.am $(CLIENT_INTERFACE_XML)
 	$(AM_V_GEN)$(GDBUS_CODEGEN) \
 		--interface-prefix org.freedesktop.GeoClue2.	\
 		--c-namespace GClueDBus				\
-		--generate-c-code geoclue-interface		\
-    		--generate-docbook=docs				\
-		$(srcdir)/$(interface_DATA)
+		--generate-c-code gclue-client-interface	\
+		--generate-docbook=docs				\
+		$(srcdir)/$(CLIENT_INTERFACE_XML)
+
+gclue-location-interface.c: gclue-location-interface.h
+gclue-location-interface.h: Makefile.am $(LOCATION_INTERFACE_XML)
+	$(AM_V_GEN)$(GDBUS_CODEGEN) \
+		--interface-prefix org.freedesktop.GeoClue2.	\
+		--c-namespace GClueDBus				\
+		--generate-c-code gclue-location-interface	\
+		--generate-docbook=docs				\
+		$(srcdir)/$(LOCATION_INTERFACE_XML)
+
+gclue-manager-interface.c: gclue-manager-interface.h
+gclue-manager-interface.h: Makefile.am $(MANAGER_INTERFACE_XML)
+	$(AM_V_GEN)$(GDBUS_CODEGEN) \
+		--interface-prefix org.freedesktop.GeoClue2.	\
+		--c-namespace GClueDBus				\
+		--generate-c-code gclue-manager-interface	\
+		--generate-docbook=docs				\
+		$(srcdir)/$(MANAGER_INTERFACE_XML)
 
 wpa_supplicant-interface.c: wpa_supplicant-interface.h
 wpa_supplicant-interface.h: Makefile.am fi.w1.wpa_supplicant1.xml
