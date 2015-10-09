@@ -10,9 +10,12 @@ where_am_i_SOURCES = where-am-i.c
 where_am_i_CFLAGS = $(GEOCLUE_CFLAGS)   		\
 		    $(WARN_CFLAGS)			\
 		    -DLOCALEDIR="\"$(datadir)/locale\"" \
+		    -I$(top_srcdir)/libgeoclue		\
 		    -I$(top_builddir)/libgeoclue	\
+		    -I$(top_srcdir)/src/public-api 	\
 		    -I$(top_builddir)/src/public-api
 where_am_i_LDADD = $(GEOCLUE_LIBS) 		\
+		   -L$(top_srcdir)/libgeoclue	\
 		   -L$(top_builddir)/libgeoclue \
 		   -lgeoclue-2
 
