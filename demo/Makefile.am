@@ -45,8 +45,11 @@ agent_CFLAGS = $(DEMO_AGENT_CFLAGS)   		   \
  	       -DLOCALEDIR="\"$(datadir)/locale\"" \
 	       -DABS_SRCDIR=\""$(abs_srcdir)"\"	   \
 	       -I$(top_builddir)/src		   \
+	       -I$(top_srcdir)/src		   \
 	       -I$(top_builddir)/src/agent	   \
-	       -I$(top_builddir)/src/public-api
+	       -I$(top_srcdir)/src/agent	   \
+	       -I$(top_builddir)/src/public-api	   \
+	       -I$(top_srcdir)/src/public-api
 agent_LDADD = $(DEMO_AGENT_LIBS) \
 	      $(top_builddir)/src/agent/libgeoclue-agent.la
 
