@@ -43,8 +43,6 @@ lib_LTLIBRARIES = libgeoclue-2.la
 
 geoclue_includedir = $(includedir)/libgeoclue-$(GEOCLUE_API_VERSION)
 geoclue_include_HEADERS = geoclue.h          \
-			  gclue-enums.h      \
-			  gclue-enum-types.h \
 			  gclue-client.h     \
 			  gclue-location.h   \
 			  gclue-manager.h    \
@@ -56,19 +54,24 @@ AM_CPPFLAGS = $(LIBGEOCLUE_CFLAGS) 		     	  \
 	      -DLOCALEDIR="\"$(datadir)/locale\"" 	  \
 	      -DG_LOG_DOMAIN=\""Geoclue"\"	     	  \
 	      -DABS_TOP_SRCDIR=\""$(abs_top_srcdir)"\" 	  \
-	      -DSYSCONFDIR=\""$(sysconfdir)"\"
+	      -DSYSCONFDIR=\""$(sysconfdir)"\"		  \
+	      -I$(top_srcdir)/src/public-api		  \
+	      -I$(top_builddir)/src/public-api
+
+ENUMS_HEADER = $(top_srcdir)/src/public-api/gclue-enums.h
+ENUMS_LIB = $(top_builddir)/src/public-api/libgeoclue-public-api.la
 
 libgeoclue_2_la_SOURCES =  \
 	gclue-client.c 	   \
 	gclue-location.c   \
 	gclue-manager.c    \
-	gclue-enum-types.c \
 	gclue-helpers.c    \
 	$(NULL)
 
-libgeoclue_2_la_LIBADD =    \
-	$(LIBGEOCLUE_LIBS)  \
-	$(LIBS)		    \
+libgeoclue_2_la_LIBADD =   \
+	$(LIBGEOCLUE_LIBS) \
+	$(LIBS)		   \
+	$(ENUMS_LIB) 	   \
 	$(NULL)
 
 CLEANFILES = $(BUILT_SOURCES) \
@@ -97,8 +100,11 @@ Geoclue-2.0.gir: $(libgeoclue_2_la_SOURCES) $(geoclue_include_HEADERS)
 	    --pkg-export=libgeoclue-2.0         \
 	    --libtool=$(top_builddir)/libtool   \
 	    -I$(srcdir)				\
+	    -I$(top_srcdir)/src/public-api	\
+	    -I$(top_builddir)/src/public-api	\
 	    --c-include='geoclue.h'             \
 	    $^                                  \
+	    $(ENUMS_HEADER) 			\
 	    $(NULL)
 
 Geoclue-2.0.gir: libgeoclue-2.la $(INTROSPECTION_SCANNER) Makefile.am

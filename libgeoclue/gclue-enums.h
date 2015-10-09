@@ -1,1 +1,0 @@
-../src/public-api/gclue-enums.h
