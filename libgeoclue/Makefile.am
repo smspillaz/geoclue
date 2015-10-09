@@ -94,7 +94,7 @@ Geoclue-2.0.gir: $(libgeoclue_2_la_SOURCES) $(geoclue_include_HEADERS)
 	    --pkg=glib-2.0                      \
 	    --pkg=gobject-2.0                   \
 	    --pkg=gio-2.0                       \
-	    --pkg-export=geoclue-2.0            \
+	    --pkg-export=libgeoclue-2.0         \
 	    --libtool=$(top_builddir)/libtool   \
 	    --c-include='geoclue.h'             \
 	    $^                                  \
