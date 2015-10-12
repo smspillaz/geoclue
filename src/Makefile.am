@@ -13,6 +13,14 @@ interface_DATA = $(CLIENT_INTERFACE_XML)   \
 		 $(LOCATION_INTERFACE_XML) \
 		 $(MANAGER_INTERFACE_XML)
 
+# Provide a single interface file too for backwards compatiblity.
+# At least gnome-settings-daemon currently relies on that.
+install-data-hook:
+	cat $(interfacedir)/$(CLIENT_INTERFACE_XML) \
+	    $(interfacedir)/$(LOCATION_INTERFACE_XML) \
+	    $(interfacedir)/$(MANAGER_INTERFACE_XML) \
+	    > $(interfacedir)/org.freedesktop.GeoClue2.xml
+
 dbus_built_sources = gclue-client-interface.c 	\
 		     gclue-client-interface.h 	\
 		     gclue-location-interface.c \
