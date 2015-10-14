@@ -90,9 +90,6 @@ gclue_accuracy_level_get_string
 gclue_client_proxy_create
 gclue_client_proxy_create_finish
 gclue_client_proxy_create_sync
-gclue_fetch_location
-gclue_fetch_location_finish
-gclue_fetch_location_sync
 </SECTION>
 
 <SECTION>

@@ -42,20 +42,6 @@ GClueClient *   gclue_client_proxy_create_sync   (const char         *desktop_id
                                                   GCancellable       *cancellable,
                                                   GError            **error);
 
-void            gclue_fetch_location             (const char         *desktop_id,
-                                                  GClueAccuracyLevel  accuracy_level,
-                                                  GCancellable       *cancellable,
-                                                  GAsyncReadyCallback callback,
-                                                  gpointer            user_data);
-GClueLocation * gclue_fetch_location_finish      (GClueClient       **client,
-                                                  GAsyncResult       *result,
-                                                  GError            **error);
-GClueLocation * gclue_fetch_location_sync        (const char         *desktop_id,
-                                                  GClueAccuracyLevel  accuracy_level,
-                                                  GClueClient       **client,
-                                                  GCancellable       *cancellable,
-                                                  GError            **error);
-
 G_END_DECLS
 
 #endif /* #ifndef __GCLUE_HELPERS_H__*/
