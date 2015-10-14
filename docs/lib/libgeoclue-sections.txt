@@ -20,8 +20,6 @@ gclue_client_skeleton_new
 <TITLE>GClueClient</TITLE>
 gclue_client_interface_info
 gclue_client_override_properties
-gclue_client_complete_start
-gclue_client_complete_stop
 gclue_client_emit_location_updated
 gclue_client_call_start
 gclue_client_call_start_finish
@@ -49,6 +47,9 @@ GCLUE_TYPE_CLIENT
 GClueClient
 GClueClientIface
 gclue_client_get_type
+<SUBSECTION Private>
+gclue_client_complete_start
+gclue_client_complete_stop
 </SECTION>
 
 <SECTION>
@@ -173,8 +174,6 @@ gclue_location_proxy_get_type
 <TITLE>GClueManager</TITLE>
 gclue_manager_interface_info
 gclue_manager_override_properties
-gclue_manager_complete_get_client
-gclue_manager_complete_add_agent
 gclue_manager_call_get_client
 gclue_manager_call_get_client_finish
 gclue_manager_call_get_client_sync
@@ -205,6 +204,8 @@ GClueManagerSkeletonClass
 GClueManagerSkeletonPrivate
 gclue_manager_skeleton_get_type
 gclue_manager_skeleton_new
+gclue_manager_complete_get_client
+gclue_manager_complete_add_agent
 </SECTION>
 
 <SECTION>
