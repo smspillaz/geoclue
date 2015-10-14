@@ -28,8 +28,8 @@
 
 /**
  * SECTION: gclue-helpers
- * @title: Geoclue convenience API
- * @short_description: Geoclue convenience API
+ * @title: Geoclue helper API
+ * @short_description: Geoclue helper API
  *
  * TODO
  */
