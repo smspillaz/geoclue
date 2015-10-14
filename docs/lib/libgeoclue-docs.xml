@@ -63,6 +63,7 @@
   <chapter>
     <title>Convenient helpers</title>
     <xi:include href="xml/gclue-helpers.xml"/>
+    <xi:include href="xml/gclue-simple.xml"/>
   </chapter>
 
   <chapter>

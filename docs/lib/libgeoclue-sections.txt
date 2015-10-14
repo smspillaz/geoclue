@@ -230,3 +230,25 @@ gclue_manager_proxy_get_type
 <SUBSECTION Private>
 GClueManagerProxyPrivate
 </SECTION>
+<SECTION>
+
+<SECTION>
+<FILE>gclue-simple</FILE>
+<TITLE>GClueSimple</TITLE>
+gclue_simple_new
+gclue_simple_new_finish
+gclue_simple_new_sync
+gclue_simple_get_client
+gclue_simple_get_location
+<SUBSECTION Standard>
+GCLUE_IS_SIMPLE
+GCLUE_IS_SIMPLE_CLASS
+GCLUE_SIMPLE
+GCLUE_SIMPLE_CLASS
+GCLUE_SIMPLE_GET_CLASS
+GCLUE_TYPE_SIMPLE
+GClueSimple
+GClueSimpleClass
+GClueSimplePrivate
+gclue_simple_get_type
+</SECTION>
