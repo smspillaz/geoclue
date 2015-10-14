@@ -55,6 +55,7 @@ static GOptionEntry entries[] =
         { NULL }
 };
 
+GClueSimple *simple = NULL;
 GClueClient *client = NULL;
 GMainLoop *main_loop;
 
@@ -62,17 +63,20 @@ static gboolean
 on_location_timeout (gpointer user_data)
 {
         g_clear_object (&client);
+        g_clear_object (&simple);
         g_main_loop_quit (main_loop);
 
         return FALSE;
 }
 
 static void
-print_location (GClueLocation *location)
+print_location (GClueSimple *simple)
 {
+        GClueLocation *location;
         gdouble altitude, speed, heading;
         const char *desc;
 
+        location = gclue_simple_get_location (simple);
         g_print ("\nNew location:\n");
         g_print ("Latitude:    %f°\nLongitude:   %f°\nAccuracy:    %f meters\n",
                  gclue_location_get_latitude (location),
@@ -95,40 +99,6 @@ print_location (GClueLocation *location)
 }
 
 static void
-on_location_proxy_ready (GObject      *source_object,
-                         GAsyncResult *res,
-                         gpointer      user_data)
-{
-        GClueLocation *location;
-        GError *error = NULL;
-
-        location = gclue_location_proxy_new_for_bus_finish (res, &error);
-        if (error != NULL) {
-            g_critical ("Failed to connect to GeoClue2 service: %s", error->message);
-
-            exit (-2);
-        }
-
-        print_location (location);
-        g_object_unref (location);
-}
-
-static void
-on_location_updated (GClueClient *client,
-                     const char  *old_location,
-                     const char  *new_location,
-                     gpointer     user_data)
-{
-        gclue_location_proxy_new_for_bus (G_BUS_TYPE_SYSTEM,
-                                          G_DBUS_PROXY_FLAGS_NONE,
-                                          "org.freedesktop.GeoClue2",
-                                          new_location,
-                                          NULL,
-                                          on_location_proxy_ready,
-                                          NULL);
-}
-
-static void
 on_client_active_notify (GClueClient *client,
                          GParamSpec *pspec,
                          gpointer    user_data)
@@ -141,28 +111,28 @@ on_client_active_notify (GClueClient *client,
 }
 
 static void
-on_location_fetched (GObject      *source_object,
-                     GAsyncResult *res,
-                     gpointer      user_data)
+on_simple_ready (GObject      *source_object,
+                 GAsyncResult *res,
+                 gpointer      user_data)
 {
-        GClueLocation *location;
         GError *error = NULL;
 
-        location = gclue_fetch_location_finish (&client, res, &error);
+        simple = gclue_simple_new_finish (res, &error);
         if (error != NULL) {
             g_critical ("Failed to connect to GeoClue2 service: %s", error->message);
 
             exit (-1);
         }
+        client = gclue_simple_get_client (simple);
+        g_object_ref (client);
         g_print ("Client object: %s\n",
                  g_dbus_proxy_get_object_path (G_DBUS_PROXY (client)));
 
-        print_location (location);
-        g_object_unref (location);
+        print_location (simple);
 
-        g_signal_connect (client,
-                          "location-updated",
-                          G_CALLBACK (on_location_updated),
+        g_signal_connect (simple,
+                          "notify::location",
+                          G_CALLBACK (print_location),
                           NULL);
         g_signal_connect (client,
                           "notify::active",
@@ -191,11 +161,11 @@ main (gint argc, gchar *argv[])
 
         g_timeout_add_seconds (timeout, on_location_timeout, NULL);
 
-        gclue_fetch_location ("geoclue-where-am-i",
-                              accuracy_level,
-                              NULL,
-                              on_location_fetched,
-                              NULL);
+        gclue_simple_new ("geoclue-where-am-i",
+                          accuracy_level,
+                          NULL,
+                          on_simple_ready,
+                          NULL);
 
         main_loop = g_main_loop_new (NULL, FALSE);
         g_main_loop_run (main_loop);
