@@ -61,8 +61,7 @@
   </chapter>
 
   <chapter>
-    <title>Convenient helpers</title>
-    <xi:include href="xml/gclue-helpers.xml"/>
+    <title>Convenience API</title>
     <xi:include href="xml/gclue-simple.xml"/>
   </chapter>
 

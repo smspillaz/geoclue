@@ -55,6 +55,9 @@ gclue_client_complete_stop
 <SECTION>
 <FILE>gclue-client-proxy</FILE>
 <TITLE>GClueClientProxy</TITLE>
+gclue_client_proxy_create
+gclue_client_proxy_create_finish
+gclue_client_proxy_create_sync
 gclue_client_proxy_new
 gclue_client_proxy_new_finish
 gclue_client_proxy_new_sync
@@ -87,9 +90,6 @@ gclue_accuracy_level_get_string
 
 <SECTION>
 <FILE>gclue-helpers</FILE>
-gclue_client_proxy_create
-gclue_client_proxy_create_finish
-gclue_client_proxy_create_sync
 </SECTION>
 
 <SECTION>
