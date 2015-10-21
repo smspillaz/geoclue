@@ -14,10 +14,8 @@ where_am_i_CFLAGS = $(GEOCLUE_CFLAGS)   		\
 		    -I$(top_builddir)/libgeoclue	\
 		    -I$(top_srcdir)/src/public-api 	\
 		    -I$(top_builddir)/src/public-api
-where_am_i_LDADD = $(GEOCLUE_LIBS) 		\
-		   -L$(top_srcdir)/libgeoclue	\
-		   -L$(top_builddir)/libgeoclue \
-		   -lgeoclue-2
+where_am_i_LDADD = $(GEOCLUE_LIBS)			\
+		   ../libgeoclue/libgeoclue-2.la
 
 appsdir = $(datadir)/applications
 apps_DATA = geoclue-where-am-i.desktop \
