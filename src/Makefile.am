@@ -25,6 +25,8 @@ install-data-hook:
 	   grep -v node) && 						     \
 	  (echo "</node>") } 						     \
 	> $(DESTDIR)$(interfacedir)/org.freedesktop.GeoClue2.xml
+uninstall-hook:
+	rm -r $(DESTDIR)$(interfacedir)/org.freedesktop.GeoClue2.xml
 
 dbus_built_sources = gclue-client-interface.c 	\
 		     gclue-client-interface.h 	\
