@@ -354,7 +354,7 @@ client_callback (AvahiClient     *avahi_client,
 
         if (state == AVAHI_CLIENT_FAILURE) {
                 const char *errorstr = avahi_strerror
-                        (avahi_client_errno (priv->avahi_client));
+                        (avahi_client_errno (avahi_client));
                 g_warning ("Avahi client failure: %s",
                            errorstr);
         }
