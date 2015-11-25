@@ -593,7 +593,8 @@ gclue_nmea_source_finalize (GObject *gnmea)
         g_clear_object (&priv->connection);
         g_clear_object (&priv->client);
         g_clear_object (&priv->cancellable);
-        avahi_client_free (priv->avahi_client);
+        if (priv->avahi_client)
+                avahi_client_free (priv->avahi_client);
         g_list_free_full (priv->all_services,
                           avahi_service_free);
 }
