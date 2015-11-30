@@ -352,6 +352,8 @@ client_callback (AvahiClient     *avahi_client,
 
         g_return_if_fail (avahi_client != NULL);
 
+        priv->avahi_client = avahi_client;
+
         if (state == AVAHI_CLIENT_FAILURE) {
                 const char *errorstr = avahi_strerror
                         (avahi_client_errno (avahi_client));
@@ -632,11 +634,11 @@ gclue_nmea_source_init (GClueNMEASource *source)
 
         priv->cancellable = g_cancellable_new ();
 
-        priv->avahi_client = avahi_client_new (poll_api,
-                                               0,
-                                               client_callback,
-                                               source,
-                                               &error);
+        avahi_client_new (poll_api,
+                          0,
+                          client_callback,
+                          source,
+                          &error);
 
         if (priv->avahi_client == NULL) {
                 g_warning ("Failed to connect to avahi service: %s",
