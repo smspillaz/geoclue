@@ -92,7 +92,7 @@ Geoclue-2.0.gir: $(libgeoclue_2_la_SOURCES) $(geoclue_include_HEADERS)
 	    --namespace Geoclue                 \
 	    --identifier-prefix=GClue           \
 	    --symbol-prefix=gclue               \
-	    --nsversion=1.0                     \
+	    --nsversion=2.0                     \
 	    --include=Gio-2.0                   \
 	    --library=geoclue-2	                \
 	    --output $@                         \
