@@ -227,7 +227,7 @@ AC_CONFIG_FILES([
   src/geoclue-$GEOCLUE_API_VERSION.pc:src/geoclue.pc.in
   src/agent/Makefile
   src/geocode-glib/Makefile
-  src/public-api/Makefile
+  public-api/Makefile
   po/Makefile.in
   data/org.freedesktop.GeoClue2.conf
   data/org.freedesktop.GeoClue2.Agent.conf
