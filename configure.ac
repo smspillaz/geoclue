@@ -125,11 +125,6 @@ if test "x$build_modem_source" = "xyes"; then
 fi
 AM_CONDITIONAL([BUILD_MODEM_SOURCE], [test "x$build_modem_source" = "xyes"])
 
-# Check for ModemManager if one of the sources requires it
-if test "x$require_modemmanager" = "xyes"; then
-  PKG_CHECK_MODULES(ModemManager, mm-glib >= $LIBMM_GLIB_MIN_VERSION)
-fi
-
 # Network NMEA Source
 AC_ARG_ENABLE(nmea-source,
               AS_HELP_STRING([--disable-nmea-source],
@@ -143,12 +138,28 @@ else
 fi
 AM_CONDITIONAL([BUILD_NMEA_SOURCE], [test "x$build_nmea_source" = "xyes"])
 
-if test "x$build_nmea_source" = "xyes"; then
-    # Check for avahi-client and avahi-glib
-    PKG_CHECK_MODULES(NMEA_SOURCE, [
-                      avahi-client >= $AVAHI_MIN_VERSION
-                      avahi-glib >= $AVAHI_MIN_VERSION])
+# Backend build
+AC_ARG_ENABLE(backend,
+              AS_HELP_STRING([--disable-backend], [Disable backend]),
+              [build_backend=$enableval], [build_backend=yes])
+
+if test "x$build_backend" = "xyes"; then
+  # Check for ModemManager if one of the sources requires it
+  if test "x$require_modemmanager" = "xyes"; then
+    PKG_CHECK_MODULES(ModemManager, mm-glib >= $LIBMM_GLIB_MIN_VERSION)
+  fi
+
+  if test "x$build_nmea_source" = "xyes"; then
+      # Check for avahi-client and avahi-glib
+      PKG_CHECK_MODULES(NMEA_SOURCE, [
+                        avahi-client >= $AVAHI_MIN_VERSION
+                        avahi-glib >= $AVAHI_MIN_VERSION])
+  fi
+  AC_DEFINE([BUILD_BACKEND], [1], [Build backend?])
+else
+  AC_DEFINE([BUILD_BACKEND], [0], [Build backend?])
 fi
+AM_CONDITIONAL([BUILD_BACKEND], [test "x$build_backend" = "xyes"])
 
 # Demo agent
 AC_ARG_ENABLE(demo-agent,
@@ -253,6 +264,7 @@ AC_MSG_NOTICE([
         c compiler:               ${CC} ${CFLAGS}
         systemdsystemunitdir:     ${systemdsystemunitdir}
 
+        Backend:                  ${build_backend}
         Convenience library:      ${build_libgeoclue}
         Introspection:            ${build_introspection}
         3G source:                ${build_3g_source}
