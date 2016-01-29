@@ -375,7 +375,11 @@ gclue_service_client_handle_start (GClueDBusClient       *client,
                 return TRUE;
         }
 
-        desktop_id = gclue_dbus_client_get_desktop_id (client);
+        desktop_id = gclue_client_info_get_xdg_id (priv->client_info);
+        if (desktop_id == NULL)
+                /* Non-xdg app */
+                desktop_id = gclue_dbus_client_get_desktop_id (client);
+
         if (desktop_id == NULL) {
                 g_dbus_method_invocation_return_error_literal (invocation,
                                                                G_DBUS_ERROR,
