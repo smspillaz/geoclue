@@ -315,23 +315,26 @@ on_notify_closed (NotifyNotification *notification,
                   gpointer            user_data)
 {
         NotificationData *data = (NotificationData *) user_data;
+        GVariant *variant = g_variant_new ("(ddd)", 0, 0, 0);
 
         if (data->authorized)
                 g_debug ("Authorized '%s'", g_app_info_get_display_name (data->app_info));
         else
                 g_debug ("'%s' not authorized",  g_app_info_get_display_name (data->app_info));
-        gclue_agent_complete_authorize_app (data->agent,
-                                            data->invocation,
-                                            data->authorized,
-                                            data->accuracy_level);
+        gclue_agent_complete_authorize_app2 (data->agent,
+                                             data->invocation,
+                                             data->authorized,
+                                             data->accuracy_level,
+                                             variant);
         notification_data_free (data);
 }
 
 static gboolean
-gclue_service_agent_handle_authorize_app (GClueAgent            *agent,
-                                          GDBusMethodInvocation *invocation,
-                                          const char            *desktop_id,
-                                          GClueAccuracyLevel     accuracy_level)
+gclue_service_agent_handle_authorize_app2 (GClueAgent            *agent,
+                                           GDBusMethodInvocation *invocation,
+                                           const char            *desktop_id,
+                                           GClueAccuracyLevel     accuracy_level,
+                                           const char            *reason)
 {
         NotifyNotification *notification;
         NotificationData *data;
@@ -344,10 +347,11 @@ gclue_service_agent_handle_authorize_app (GClueAgent            *agent,
         app_info = G_APP_INFO (g_desktop_app_info_new (desktop_file));
         if (app_info == NULL) {
                 g_debug ("Failed to find %s", desktop_file);
-                gclue_agent_complete_authorize_app (agent,
-                                                    invocation,
-                                                    FALSE,
-                                                    accuracy_level);
+                gclue_agent_complete_authorize_app2 (agent,
+                                                     invocation,
+                                                     FALSE,
+                                                     accuracy_level,
+                                                     NULL);
 
                 return TRUE;
         }
@@ -355,6 +359,11 @@ gclue_service_agent_handle_authorize_app (GClueAgent            *agent,
 
         msg = g_strdup_printf (_("Allow '%s' to access your location information?"),
                                g_app_info_get_display_name (app_info));
+        if (reason != NULL && reason[0] != '/') {
+                char *tmp = msg;
+                msg = g_strdup_printf ("%s\n%s", msg, reason);
+                g_free (tmp);
+        }
         notification = notify_notification_new (_("Geolocation"), msg, "dialog-question");
         g_free (msg);
 
@@ -382,6 +391,7 @@ gclue_service_agent_handle_authorize_app (GClueAgent            *agent,
                           data);
 
         if (!notify_notification_show (notification, &error)) {
+                g_critical ("Failed to show notification: %s\n", error->message);
                 g_dbus_method_invocation_take_error (invocation, error);
                 notification_data_free (data);
 
@@ -394,7 +404,7 @@ gclue_service_agent_handle_authorize_app (GClueAgent            *agent,
 static void
 gclue_service_agent_agent_iface_init (GClueAgentIface *iface)
 {
-        iface->handle_authorize_app = gclue_service_agent_handle_authorize_app;
+        iface->handle_authorize_app2 = gclue_service_agent_handle_authorize_app2;
 }
 
 static void

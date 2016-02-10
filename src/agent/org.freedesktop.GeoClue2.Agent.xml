@@ -27,13 +27,35 @@
         @allowed_accuracy_level: The level of location accuracy allowed for client, as <link linkend="GClueAccuracyLevel">GClueAccuracyLevel</link>.
 
         This is the method that will be called by geoclue to get applications
-        authorized to be given location information.
+        authorized to be given location information. Deprecated in favor of
+        org.freedesktop.GeoClue2.Agent.AuthorizeApp2.
     -->
     <method name="AuthorizeApp">
       <arg name="desktop_id" type="s" direction="in"/>
       <arg name="req_accuracy_level" type="u" direction="in"/>
       <arg name="authorized" type="b" direction="out"/>
       <arg name="allowed_accuracy_level" type="u" direction="out"/>
+    </method>
+
+    <!--
+        AuthorizeApp2:
+        @desktop_id: The desktop file id (the basename of the desktop file) of the application requesting location information.
+        @req_accuracy_level: The level of location accuracy requested by client, as <link linkend="GClueAccuracyLevel">GClueAccuracyLevel</link>.
+        @reason: The application-provided reason for access to location data, as freeform text.
+        @authorized: Return value indicating if application should be given location information or not.
+        @allowed_accuracy_level: The level of location accuracy allowed for client, as <link linkend="GClueAccuracyLevel">GClueAccuracyLevel</link>.
+        @location: User/agent can use this to dictate location to be given to user, although currently it's completely ignored and is only added here for future safety. Format is latitiude, longitude, accuracy (in meters).
+
+        This is the method that will be called by geoclue to get applications
+        authorized to be given location information.
+    -->
+    <method name="AuthorizeApp2">
+      <arg name="desktop_id" type="s" direction="in"/>
+      <arg name="req_accuracy_level" type="u" direction="in"/>
+      <arg name="reason" type="s" direction="in"/>
+      <arg name="authorized" type="b" direction="out"/>
+      <arg name="allowed_accuracy_level" type="u" direction="out"/>
+      <arg name="location" type="(ddd)" direction="out"/>
     </method>
 
     <!--

@@ -142,6 +142,69 @@ on_manager_proxy_ready (GObject      *source_object,
 }
 
 /**
+ * gclue_client_proxy_create_full:
+ * @desktop_id: The desktop file id (the basename of the desktop file).
+ * @accuracy_level: The requested accuracy level as #GClueAccuracyLevel.
+ * @reason: The reason to access the location data, as translated (by
+ *          application) free-form string.
+ * @cancellable: (allow-none): A #GCancellable or %NULL.
+ * @callback: A #GAsyncReadyCallback to call when the results are ready.
+ * @user_data: User data to pass to @callback.
+ *
+ * A utility function to create a #GClueClientProxy without having to deal with
+ * a #GClueManager.
+ *
+ * See #gclue_client_proxy_create_sync() for the synchronous, blocking version
+ * of this function.
+ */
+void
+gclue_client_proxy_create_full (const char         *desktop_id,
+                                GClueAccuracyLevel  accuracy_level,
+                                const char         *reason,
+                                GCancellable       *cancellable,
+                                GAsyncReadyCallback callback,
+                                gpointer            user_data)
+{
+        GTask *task;
+        ClientCreateData *data;
+
+        task = g_task_new (NULL, cancellable, callback, user_data);
+
+        data = client_create_data_new (desktop_id, accuracy_level, reason);
+        g_task_set_task_data (task,
+                              data,
+                              (GDestroyNotify) client_create_data_free);
+
+        gclue_manager_proxy_new_for_bus (G_BUS_TYPE_SYSTEM,
+                                         G_DBUS_PROXY_FLAGS_NONE,
+                                         BUS_NAME,
+                                         MANAGER_PATH,
+                                         cancellable,
+                                         on_manager_proxy_ready,
+                                         task);
+}
+
+/**
+ * gclue_client_proxy_create_full_finish:
+ * @result: The #GAsyncResult obtained from the #GAsyncReadyCallback passed to
+ *          gclue_client_proxy_create_full().
+ * @error: Return location for error or %NULL.
+ *
+ * Finishes an operation started with gclue_client_proxy_create().
+ *
+ * Returns: (transfer full) (type GClueClientProxy): The constructed proxy
+ * object or %NULL if @error is set.
+ */
+GClueClient *
+gclue_client_proxy_create_full_finish (GAsyncResult *result,
+                                       GError      **error)
+{
+        g_return_val_if_fail (g_task_is_valid (result, NULL), NULL);
+
+        return g_task_propagate_pointer (G_TASK (result), error);
+}
+
+/**
  * gclue_client_proxy_create:
  * @desktop_id: The desktop file id (the basename of the desktop file).
  * @accuracy_level: The requested accuracy level as #GClueAccuracyLevel.

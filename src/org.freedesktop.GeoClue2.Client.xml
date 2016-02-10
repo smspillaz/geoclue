@@ -44,7 +44,8 @@
         DesktopId:
 
         The desktop file id (the basename of the desktop file). This property
-        must be set by applications for authorization to work.
+        must be set by applications for authorization to work, unless your app
+        is an xdg-app bundle.
     -->
     <property name="DesktopId" type="s" access="readwrite"/>
 
@@ -59,6 +60,18 @@
         and/or how much accuracy user agrees to be confortable with.
     -->
     <property name="RequestedAccuracyLevel" type="u" access="readwrite"/>
+
+    <!--
+        Reason:
+
+        The reason for accessing location data. This is free-form localized (by
+        application) string that is presented to users when they are asked if
+        they'd like to give access to location data to your application.
+
+        While it is not mandatory to set this property, it is highly recommended
+        to do so.
+    -->
+    <property name="Reason" type="s" access="readwrite"/>
 
     <!--
         Active:

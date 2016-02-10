@@ -299,6 +299,7 @@ gclue_config_is_agent_allowed (GClueConfig     *config,
         gsize i;
 
         for (i = 0; i < config->priv->num_agents; i++) {
+                g_print ("\nChecking %s\n", config->priv->agents[i]);
                 if (g_strcmp0 (desktop_id, config->priv->agents[i]) == 0)
                         return TRUE;
         }

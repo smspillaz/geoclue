@@ -286,6 +286,8 @@ typedef struct
         GDBusMethodInvocation *invocation;
         char *desktop_id;
         GClueAccuracyLevel accuracy_level;
+
+        gboolean auth2_failed;
 } StartData;
 
 static void
@@ -320,12 +322,34 @@ on_authorize_app_ready (GObject      *source_object,
         GError *error = NULL;
         gboolean authorized = FALSE;
 
-        if (!gclue_agent_call_authorize_app_finish (GCLUE_AGENT (source_object),
-                                                    &authorized,
-                                                    &data->accuracy_level,
-                                                    res,
-                                                    &error))
-                goto error_out;
+        if (data->auth2_failed) {
+                if (!gclue_agent_call_authorize_app_finish
+                                (priv->agent_proxy,
+                                 &authorized,
+                                 &data->accuracy_level,
+                                 res,
+                                 &error))
+                        goto error_out;
+        } else {
+                if (!gclue_agent_call_authorize_app2_finish
+                                (priv->agent_proxy,
+                                 &authorized,
+                                 &data->accuracy_level,
+                                 NULL,
+                                 res,
+                                 &error)) {
+                        // Try V1 then
+                        g_print ("Now trying v1\n");
+                        data->auth2_failed = TRUE;
+                        gclue_agent_call_authorize_app (priv->agent_proxy,
+                                                        data->desktop_id,
+                                                        data->accuracy_level,
+                                                        NULL,
+                                                        on_authorize_app_ready,
+                                                        data);
+                        return;
+                }
+        }
 
         if (!authorized) {
                 guint32 uid;
@@ -360,7 +384,7 @@ gclue_service_client_handle_start (GClueDBusClient       *client,
         GClueServiceClientPrivate *priv = GCLUE_SERVICE_CLIENT (client)->priv;
         GClueConfig *config;
         StartData *data;
-        const char *desktop_id;
+        const char *desktop_id, *reason;
         GClueAccuracyLevel max_accuracy;
         GClueAppPerm app_perm;
         guint32 uid;
@@ -439,13 +463,17 @@ gclue_service_client_handle_start (GClueDBusClient       *client,
                  "Max accuracy level allowed by agent: %u",
                  data->accuracy_level, max_accuracy);
         data->accuracy_level = CLAMP (data->accuracy_level, 0, max_accuracy);
+        reason = gclue_dbus_client_get_reason (client);
+        if (reason == NULL)
+                reason = "/";
 
-        gclue_agent_call_authorize_app (priv->agent_proxy,
-                                        desktop_id,
-                                        data->accuracy_level,
-                                        NULL,
-                                        on_authorize_app_ready,
-                                        data);
+        gclue_agent_call_authorize_app2 (priv->agent_proxy,
+                                         desktop_id,
+                                         data->accuracy_level,
+                                         reason,
+                                         NULL,
+                                         on_authorize_app_ready,
+                                         data);
 
         return TRUE;
 }
