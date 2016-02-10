@@ -438,7 +438,7 @@ gclue_service_client_handle_start (GClueDBusClient       *client,
                 return TRUE;
         }
         g_debug ("requested accuracy level: %u. "
-                 "Accuracy level allowed by agent: %u",
+                 "Max accuracy level allowed by agent: %u",
                  accuracy_level, max_accuracy);
         accuracy_level = CLAMP (accuracy_level, 0, max_accuracy);
 
