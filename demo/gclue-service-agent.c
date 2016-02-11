@@ -382,6 +382,7 @@ gclue_service_agent_handle_authorize_app (GClueAgent            *agent,
                           data);
 
         if (!notify_notification_show (notification, &error)) {
+                g_critical ("Failed to show notification: %s\n", error->message);
                 g_dbus_method_invocation_take_error (invocation, error);
                 notification_data_free (data);
 
