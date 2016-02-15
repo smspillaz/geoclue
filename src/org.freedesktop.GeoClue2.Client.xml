@@ -45,6 +45,19 @@
     </property>
 
     <!--
+        TimeThreshold:
+
+        Contains the current time threshold in seconds. This value is used
+        by the service when it gets new location info. If the time since the
+        last update is below the threshold, it won't emit the LocationUpdated
+        signal. The default value is 0. When TimeThreshold is zero, it always
+        emits the signal.
+    -->
+    <property name="TimeThreshold" type="u" access="readwrite">
+        <annotation name="org.freedesktop.Accounts.DefaultValue" value="0"/>
+    </property>
+
+    <!--
         DesktopId:
 
         The desktop file id (the basename of the desktop file). This property

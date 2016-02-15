@@ -53,6 +53,7 @@ struct _GClueServiceClientPrivate
         GClueServiceLocation *location;
         GClueServiceLocation *prev_location;
         guint distance_threshold;
+        guint time_threshold;
 
         GClueLocator *locator;
 
@@ -143,10 +144,45 @@ distance_below_threshold (GClueServiceClient *client,
 }
 
 static gboolean
+time_below_threshold (GClueServiceClient *client,
+                      GClueLocation      *location)
+{
+        GClueServiceClientPrivate *priv = client->priv;
+        GClueLocation *cur_location;
+        gint64 cur_ts, ts;
+        guint64 diff_ts;
+
+        if (priv->time_threshold == 0)
+                return FALSE;
+
+        g_object_get (priv->location,
+                      "location", &cur_location,
+                      NULL);
+
+        cur_ts = geocode_location_get_timestamp
+                                (GEOCODE_LOCATION (cur_location));
+        ts = geocode_location_get_timestamp (GEOCODE_LOCATION (location));
+        diff_ts = ABS (ts - cur_ts);
+
+        g_object_unref (cur_location);
+
+        if (diff_ts < priv->time_threshold) {
+                g_debug ("Time difference between previous and new location"
+                         " is %" G_GUINT64_FORMAT " seconds and"
+                         " below threshold of %" G_GUINT32_FORMAT " seconds.",
+                         diff_ts, priv->time_threshold);
+                return TRUE;
+        }
+
+        return FALSE;
+}
+
+static gboolean
 below_threshold (GClueServiceClient *client,
                  GClueLocation      *location)
 {
-	return distance_below_threshold (client, location)
+        return (distance_below_threshold (client, location) ||
+                time_below_threshold (client, location));
 }
 
 static gboolean
@@ -663,6 +699,10 @@ gclue_service_client_handle_set_property (GDBusConnection *connection,
                 priv->distance_threshold = gclue_dbus_client_get_distance_threshold
                         (client);
                 g_debug ("New distance threshold: %u", priv->distance_threshold);
+        } else if (ret && strcmp (property_name, "TimeThreshold") == 0) {
+                priv->time_threshold = gclue_dbus_client_get_time_threshold
+                        (client);
+                g_debug ("New time threshold: %u", priv->time_threshold);
         }
 
         return ret;
