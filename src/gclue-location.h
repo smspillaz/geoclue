@@ -86,6 +86,7 @@ GClueLocation *gclue_location_new_full
                                    gdouble     speed,
                                    gdouble     heading,
                                    gdouble     altitude,
+                                   guint64     timestamp,
                                    const char *description);
 
 GClueLocation *gclue_location_create_from_gga

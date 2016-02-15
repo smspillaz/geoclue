@@ -90,8 +90,15 @@ gclue_service_location_get_property (GObject    *object,
         {
                 GClueDBusLocation *location;
                 GClueLocation *loc;
+                GVariant *timestamp;
+                guint64 sec, usec;
 
                 location = GCLUE_DBUS_LOCATION (object);
+
+                timestamp = gclue_dbus_location_get_timestamp (location);
+                g_variant_get (timestamp, "(tt)", &sec, &usec);
+                g_variant_unref (timestamp);
+
                 loc = gclue_location_new_full
                         (gclue_dbus_location_get_latitude (location),
                          gclue_dbus_location_get_longitude (location),
@@ -99,6 +106,7 @@ gclue_service_location_get_property (GObject    *object,
                          gclue_dbus_location_get_speed (location),
                          gclue_dbus_location_get_heading (location),
                          gclue_dbus_location_get_altitude (location),
+                         sec,
                          gclue_dbus_location_get_description (location));
 
                 g_value_take_object (value, loc);
@@ -137,6 +145,7 @@ gclue_service_location_set_property (GObject      *object,
                 GClueLocation *loc;
                 gdouble altitude;
                 GeocodeLocation *g_loc;
+                GVariant *timestamp;
 
                 location = GCLUE_DBUS_LOCATION (object);
                 loc = g_value_get_object (value);
@@ -153,6 +162,12 @@ gclue_service_location_set_property (GObject      *object,
                         (location, gclue_location_get_speed (loc));
                 gclue_dbus_location_set_heading
                         (location, gclue_location_get_heading (loc));
+                timestamp = g_variant_new
+                        ("(tt)",
+                         (guint64) geocode_location_get_timestamp (g_loc),
+                         (guint64) 0);
+                gclue_dbus_location_set_timestamp
+                        (location, timestamp);
                 altitude = geocode_location_get_altitude (g_loc);
                 if (altitude != GEOCODE_LOCATION_ALTITUDE_UNKNOWN)
                         gclue_dbus_location_set_altitude (location, altitude);

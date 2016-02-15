@@ -326,6 +326,7 @@ gclue_location_new (gdouble latitude,
  * @speed: speed in meters per second
  * @heading: heading in degrees
  * @altitude: altitude of location in meters
+ * @timestamp: timestamp in seconds since the Epoch
  * @description: a description for the location
  *
  * Creates a new #GClueLocation object.
@@ -339,6 +340,7 @@ gclue_location_new_full (gdouble     latitude,
                          gdouble     speed,
                          gdouble     heading,
                          gdouble     altitude,
+                         guint64     timestamp,
                          const char *description)
 {
         return g_object_new (GCLUE_TYPE_LOCATION,
@@ -348,6 +350,7 @@ gclue_location_new_full (gdouble     latitude,
                              "speed", speed,
                              "heading", heading,
                              "altitude", altitude,
+                             "timestamp", timestamp,
                              "description", description,
                              NULL);
 }
