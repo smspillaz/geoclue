@@ -319,10 +319,13 @@ gclue_location_new (gdouble latitude,
 }
 
 /**
- * gclue_location_new_with_description:
+ * gclue_location_new_full:
  * @latitude: a valid latitude
  * @longitude: a valid longitude
  * @accuracy: accuracy of location in meters
+ * @speed: speed in meters per second
+ * @heading: heading in degrees
+ * @altitude: altitude of location in meters
  * @description: a description for the location
  *
  * Creates a new #GClueLocation object.
@@ -330,15 +333,21 @@ gclue_location_new (gdouble latitude,
  * Returns: a new #GClueLocation object. Use g_object_unref() when done.
  **/
 GClueLocation *
-gclue_location_new_with_description (gdouble     latitude,
-                                     gdouble     longitude,
-                                     gdouble     accuracy,
-                                     const char *description)
+gclue_location_new_full (gdouble     latitude,
+                         gdouble     longitude,
+                         gdouble     accuracy,
+                         gdouble     speed,
+                         gdouble     heading,
+                         gdouble     altitude,
+                         const char *description)
 {
         return g_object_new (GCLUE_TYPE_LOCATION,
                              "latitude", latitude,
                              "longitude", longitude,
                              "accuracy", accuracy,
+                             "speed", speed,
+                             "heading", heading,
+                             "altitude", altitude,
                              "description", description,
                              NULL);
 }

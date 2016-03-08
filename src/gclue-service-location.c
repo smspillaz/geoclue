@@ -90,21 +90,16 @@ gclue_service_location_get_property (GObject    *object,
         {
                 GClueDBusLocation *location;
                 GClueLocation *loc;
-                gdouble altitude;
 
                 location = GCLUE_DBUS_LOCATION (object);
-                loc = gclue_location_new_with_description
+                loc = gclue_location_new_full
                         (gclue_dbus_location_get_latitude (location),
                          gclue_dbus_location_get_longitude (location),
                          gclue_dbus_location_get_accuracy (location),
+                         gclue_dbus_location_get_speed (location),
+                         gclue_dbus_location_get_heading (location),
+                         gclue_dbus_location_get_altitude (location),
                          gclue_dbus_location_get_description (location));
-                gclue_location_set_speed
-                        (loc, gclue_dbus_location_get_speed (location));
-                gclue_location_set_heading
-                        (loc, gclue_dbus_location_get_heading (location));
-                altitude = gclue_dbus_location_get_altitude (location);
-                if (altitude != GEOCODE_LOCATION_ALTITUDE_UNKNOWN)
-                        g_object_set (loc, "altitude", altitude, NULL);
 
                 g_value_take_object (value, loc);
                 break;

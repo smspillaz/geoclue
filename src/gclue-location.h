@@ -79,10 +79,13 @@ GClueLocation *gclue_location_new (gdouble latitude,
                                    gdouble longitude,
                                    gdouble accuracy);
 
-GClueLocation *gclue_location_new_with_description
+GClueLocation *gclue_location_new_full
                                   (gdouble     latitude,
                                    gdouble     longitude,
                                    gdouble     accuracy,
+                                   gdouble     speed,
+                                   gdouble     heading,
+                                   gdouble     altitude,
                                    const char *description);
 
 GClueLocation *gclue_location_create_from_gga
