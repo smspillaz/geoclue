@@ -238,7 +238,7 @@ on_agent_props_changed (GDBusProxy *agent_proxy,
         GVariant *value;
         gchar *key;
         
-        if (g_variant_n_children (changed_properties) < 0)
+        if (g_variant_n_children (changed_properties) <= 0)
                 return;
 
         g_variant_get (changed_properties, "a{sv}", &iter);
