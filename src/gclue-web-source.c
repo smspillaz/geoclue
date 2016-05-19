@@ -134,7 +134,7 @@ on_network_changed (GNetworkMonitor *monitor,
 
         web->priv->network_available = available;
         if (last_available == available)
-                return; /* We already reacted to netork change */
+                return; /* We already reacted to network change */
         if (!available) {
                 g_debug ("Network unavailable");
                 return;
