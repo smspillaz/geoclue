@@ -119,7 +119,7 @@ refresh_accuracy_level (GClueWebSource *web,
 }
 
 static void
-on_network_changed (GNetworkMonitor *monitor,
+on_network_changed (GNetworkMonitor *monitor G_GNUC_UNUSED,
                     gboolean         available,
                     gpointer         user_data)
 {
