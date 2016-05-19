@@ -212,7 +212,7 @@ parse_coordinate_string (const char *coordinate,
         degrees = g_ascii_strtod (degrees_str, NULL);
         g_free (degrees_str);
 
-        minutes = g_ascii_strtod (coordinate + dot_offset - 2, NULL);
+        minutes = g_ascii_strtod (dot_str - 2, NULL);
 
         /* Include the minutes as part of the degrees */
         out = degrees + (minutes / 60.0);
