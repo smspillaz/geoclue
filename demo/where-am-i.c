@@ -105,7 +105,6 @@ print_location (GClueSimple *simple)
                 gchar *str;
 
                 g_variant_get (timestamp, "(tt)", &tv.tv_sec, &tv.tv_usec);
-                g_variant_unref (timestamp);
 
                 date_time = g_date_time_new_from_timeval_local (&tv);
                 str = g_date_time_format
