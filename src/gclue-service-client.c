@@ -52,7 +52,7 @@ struct _GClueServiceClientPrivate
 
         GClueServiceLocation *location;
         GClueServiceLocation *prev_location;
-        guint threshold;
+        guint distance_threshold;
 
         GClueLocator *locator;
 
@@ -113,15 +113,15 @@ emit_location_updated (GClueServiceClient *client,
 }
 
 static gboolean
-below_threshold (GClueServiceClient *client,
-                 GClueLocation      *location)
+distance_below_threshold (GClueServiceClient *client,
+                          GClueLocation      *location)
 {
         GClueServiceClientPrivate *priv = client->priv;
         GClueLocation *cur_location;
         gdouble distance;
         gdouble threshold_km;
 
-        if (priv->threshold == 0)
+        if (priv->distance_threshold == 0)
                 return FALSE;
 
         g_object_get (priv->location,
@@ -131,11 +131,18 @@ below_threshold (GClueServiceClient *client,
                 (GEOCODE_LOCATION (cur_location), GEOCODE_LOCATION (location));
         g_object_unref (cur_location);
 
-        threshold_km = priv->threshold / 1000.0;
+        threshold_km = priv->distance_threshold / 1000.0;
         if (distance < threshold_km)
                 return TRUE;
 
         return FALSE;
+}
+
+static gboolean
+below_threshold (GClueServiceClient *client,
+                 GClueLocation      *location)
+{
+	return distance_below_threshold (client, location)
 }
 
 static gboolean
@@ -649,9 +656,9 @@ gclue_service_client_handle_set_property (GDBusConnection *connection,
                                              error,
                                              user_data);
         if (ret && strcmp (property_name, "DistanceThreshold") == 0) {
-                priv->threshold = gclue_dbus_client_get_distance_threshold
+                priv->distance_threshold = gclue_dbus_client_get_distance_threshold
                         (client);
-                g_debug ("New distance threshold: %u", priv->threshold);
+                g_debug ("New distance threshold: %u", priv->distance_threshold);
         }
 
         return ret;
