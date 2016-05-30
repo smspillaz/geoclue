@@ -87,7 +87,13 @@ typelibsdir = $(libdir)/girepository-1.0
 typelibs_DATA = Geoclue-2.0.typelib
 
 Geoclue-2.0.gir: $(libgeoclue_2_la_SOURCES) $(geoclue_include_HEADERS)
-	$(AM_V_GEN)$(INTROSPECTION_SCANNER) -v  \
+	$(AM_V_GEN) env CPPFLAGS="$(CPPFLAGS)"  \
+	    CFLAGS="$(CFLAGS)"			\
+	    LDFLAGS="$(LDFLAGS)"		\
+	    CC="$(CC)"				\
+	    PKG_CONFIG="$(PKG_CONFIG)"		\
+	    DLLTOOL="$(DLLTOOL)" 		\
+	    $(INTROSPECTION_SCANNER) -v 	\
 	    --warn-all                          \
 	    --namespace Geoclue                 \
 	    --identifier-prefix=GClue           \
