@@ -100,7 +100,7 @@ Geoclue-2.0.gir: $(libgeoclue_2_la_SOURCES) $(geoclue_include_HEADERS)
 	    --symbol-prefix=gclue               \
 	    --nsversion=2.0                     \
 	    --include=Gio-2.0                   \
-	    --library=geoclue-2	                \
+	    --library=libgeoclue-2.la	        \
 	    --output $@                         \
 	    --pkg=glib-2.0                      \
 	    --pkg=gobject-2.0                   \
