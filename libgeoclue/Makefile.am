@@ -108,7 +108,7 @@ Geoclue-2.0.gir: $(libgeoclue_2_la_SOURCES) $(geoclue_include_HEADERS)
 	    --pkg-export=libgeoclue-2.0         \
 	    --libtool=$(top_builddir)/libtool   \
 	    -I$(srcdir)				\
-	    -I$(top_srcdir)/public-api	\
+	    -I$(top_srcdir)/public-api		\
 	    -I$(top_builddir)/public-api	\
 	    --c-include='geoclue.h'             \
 	    $^                                  \
