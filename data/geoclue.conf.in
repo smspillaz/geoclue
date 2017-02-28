@@ -68,6 +68,11 @@ allowed=true
 system=true
 users=
 
+[gnome-color-panel]
+allowed=true
+system=true
+users=
+
 [epiphany]
 allowed=true
 system=false
