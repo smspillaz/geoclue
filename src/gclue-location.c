@@ -427,6 +427,8 @@ out:
 GClueLocation *
 gclue_location_duplicate (GClueLocation *location)
 {
+        g_return_val_if_fail (GCLUE_IS_LOCATION (location), NULL);
+
         GeocodeLocation *gloc = GEOCODE_LOCATION (location);
 
         return g_object_new
