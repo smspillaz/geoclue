@@ -1,3 +1,9 @@
+2.4.7
+=====
+
+- Fix a potential crash.
+- More verbose warning on invalid accuracy from NMEA source.
+
 2.4.6
 =====
 
