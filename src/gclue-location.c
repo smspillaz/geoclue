@@ -28,7 +28,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define TIME_DIFF_THRESHOLD 60
+#define TIME_DIFF_THRESHOLD 60000000 /* 60 seconds */
 
 struct _GClueLocationPrivate {
         gdouble speed;
