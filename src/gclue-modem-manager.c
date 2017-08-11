@@ -545,6 +545,23 @@ on_mm_modem_state_notify (GObject    *gobject,
 }
 
 static void
+on_gps_refresh_rate_set (GObject      *source_object,
+                         GAsyncResult *res,
+                         gpointer      user_data)
+{
+        gboolean ret;
+        GError *error = NULL;
+
+        ret = mm_modem_location_set_gps_refresh_rate_finish
+                (MM_MODEM_LOCATION (source_object), res, &error);
+        if (!ret) {
+                g_warning ("Failed to set GPS refresh rate: %s",
+                           error->message);
+                g_error_free (error);
+        }
+}
+
+static void
 on_mm_object_added (GDBusObjectManager *object_manager,
                     GDBusObject        *object,
                     gpointer            user_data)
@@ -582,6 +599,12 @@ on_mm_object_added (GDBusObjectManager *object_manager,
         manager->priv->mm_object = g_object_ref (mm_object);
         manager->priv->modem = mm_modem;
         manager->priv->modem_location = mm_object_get_modem_location (mm_object);
+
+        mm_modem_location_set_gps_refresh_rate (manager->priv->modem_location,
+                                                0,
+                                                manager->priv->cancellable,
+                                                on_gps_refresh_rate_set,
+                                                user_data);
 
         g_signal_connect (G_OBJECT (manager->priv->modem_location),
                           "notify::location",
