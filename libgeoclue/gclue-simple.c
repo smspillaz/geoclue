@@ -254,23 +254,37 @@ on_location_proxy_ready (GObject      *source_object,
 }
 
 static void
+create_new_location_proxy_for_task (GClueSimple         *simple,
+                                    const gchar         *location_object_path,
+                                    GAsyncReadyCallback ready_callback,
+                                    gpointer            user_data)
+{
+        GClueSimplePrivate *priv = simple->priv;
+
+        gclue_location_proxy_new_for_bus (G_BUS_TYPE_SYSTEM,
+                                          G_DBUS_PROXY_FLAGS_NONE,
+                                          BUS_NAME,
+                                          location_object_path,
+                                          priv->cancellable,
+                                          ready_callback,
+                                          user_data);
+}
+
+static void
 on_location_updated (GClueClient *client,
                      const char  *old_location,
                      const char  *new_location,
                      gpointer     user_data)
 {
-        GClueSimplePrivate *priv = GCLUE_SIMPLE (user_data)->priv;
+        GClueSimple *simple = GCLUE_SIMPLE (user_data);
 
         if (new_location == NULL || g_strcmp0 (new_location, "/") == 0)
                 return;
 
-        gclue_location_proxy_new_for_bus (G_BUS_TYPE_SYSTEM,
-                                          G_DBUS_PROXY_FLAGS_NONE,
-                                          BUS_NAME,
-                                          new_location,
-                                          priv->cancellable,
-                                          on_location_proxy_ready,
-                                          user_data);
+        create_new_location_proxy_for_task (simple,
+                                            new_location,
+                                            on_location_proxy_ready,
+                                            user_data);
 }
 
 static void
@@ -280,12 +294,11 @@ on_client_started (GObject      *source_object,
 {
         GTask *task = G_TASK (user_data);
         GClueClient *client = GCLUE_CLIENT (source_object);
+        GClueSimple *simple = g_task_get_source_object (task);
         GError *error = NULL;
 
         gclue_client_call_start_finish (client, res, &error);
         if (error != NULL) {
-                GClueSimple *simple = g_task_get_source_object (task);
-
                 g_task_return_error (task, error);
                 g_clear_object (&simple->priv->task);
         }
@@ -299,6 +312,7 @@ on_client_created (GObject      *source_object,
         GTask *task = G_TASK (user_data);
         GClueSimple *simple = g_task_get_source_object (task);
         GClueSimplePrivate *priv = simple->priv;
+        const gchar *location = NULL;
         GError *error = NULL;
 
         priv->client = gclue_client_proxy_create_finish (res, &error);
@@ -310,16 +324,33 @@ on_client_created (GObject      *source_object,
         }
 
         priv->task = task;
-        priv->update_id =
-                g_signal_connect (priv->client,
-                                  "location-updated",
-                                  G_CALLBACK (on_location_updated),
-                                  simple);
-
         gclue_client_call_start (priv->client,
                                  g_task_get_cancellable (task),
                                  on_client_started,
                                  task);
+
+        /* Now that we have a D-Bus connection to the geoclue daemon,
+         * check to see if we already had the location property set. If
+         * so we won't get a further signal and can immediately continue.
+         *
+         * This case happens if an application on the same connection
+         * creates a GClueSimple more than once - the daemon will have already
+         * created a location object for us. */
+        location = gclue_client_get_location (simple->priv->client);
+
+        if (location == NULL || g_strcmp0 (location, "/") == 0) {
+                simple->priv->update_id =
+                        g_signal_connect (simple->priv->client,
+                                          "location-updated",
+                                          G_CALLBACK (on_location_updated),
+                                          simple);
+                return;
+        }
+
+        create_new_location_proxy_for_task (simple,
+                                            location,
+                                            on_location_proxy_ready,
+                                            simple);
 }
 
 static void
